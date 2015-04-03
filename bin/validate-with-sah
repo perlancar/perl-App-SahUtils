@@ -57,6 +57,7 @@ _
         return_type => {
             schema=>['str*', in=>[qw/bool str full/]],
             default=>'str',
+            cmdline_aliases => {r=>{}},
         },
         show_schema => {
             summary => "Don't validate data, show normalized schema only",
