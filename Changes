@@ -1,5 +1,10 @@
 Revision history for App-SahUtils
 
+0.02    2015-04-03 (PERLANCAR)
+
+	- validate-with-sah: Add alias -r for --return-type.
+
+
 0.01    2015-04-03 (PERLANCAR)
 
         - First release.
