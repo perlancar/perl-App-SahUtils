@@ -18,14 +18,15 @@ $SPEC{validate_with_sah} = {
 
 This script is useful for testing Sah schemas. You can quickly specify from the
 CLI a schema with some data to validate it against. This script can also be used
-to just normalize a Sah schema and show it (see `--show-schema`), or generate
-validator code and show it (see `--show-code`).
+to just normalize a Sah schema and show it (`--show-schema`), or compile a
+schema and show the raw compilation result (`--show-raw-compile`), or generate
+validator code and show it (`--show-code`).
 
 _
     args_groups => [
         {rel=>'one_of', args=>[qw/schema schema_file/]}, # XXX req_one_of
         {rel=>'one_of', args=>[qw/data multiple_data/]},
-        # {rel=>'depends', args=>[qw/show_linenum/], on_args=>[qw/show_code/]},
+        # {rel=>'depends', args=>[qw/show_linenum/], on_all=>[qw/show_code/]},
     ],
     args => {
         schema => {
@@ -65,6 +66,10 @@ _
             summary => "Don't validate data, show normalized schema only",
             schema=>['bool', is=>1],
             cmdline_aliases => {s=>{}},
+        },
+        show_raw_compile => {
+            summary => "Don't validate data, show raw compilation result only",
+            schema=>['bool', is=>1],
         },
         show_code => {
             summary => "Don't validate data, show generated validator code only",
@@ -167,27 +172,42 @@ sub validate_with_sah {
     }
 
     my $func;
+    my $obj;
     {
         no strict 'refs';
         my $c = $args{compiler};
         if ($c eq 'perl') {
             require Data::Sah;
-            $func = \&{"Data::Sah::gen_validator"};
+            if ($args{show_raw_compile}) {
+                $obj = Data::Sah->new->get_compiler('perl');
+            } else {
+                $func = \&{"Data::Sah::gen_validator"};
+            }
         } elsif ($c eq 'js') {
-            require Data::Sah::JS;
-            $func = \&{"Data::Sah::JS::gen_validator"};
+            if ($args{show_raw_compile}) {
+                $obj = Data::Sah->new->get_compiler('perl');
+            } else {
+                require Data::Sah::JS;
+                $func = \&{"Data::Sah::JS::gen_validator"};
+            }
         } else {
             return [400, "Unknown compiler '$c', please specify perl/js"];
         }
     }
 
-    my $v;
+    my %gen_opts;
     {
-        my %opts;
-        if ($args{show_code}) { $opts{source} = 1 }
-        $opts{return_type} = $args{return_type};
-        $v = $func->($schema, \%opts);
+        if ($args{show_code}) { $gen_opts{source} = 1 }
+        $gen_opts{return_type} = $gen_opts{return_type};
     }
+
+    if ($args{show_raw_compile}) {
+        require Data::Dump;
+        my $cd = $obj->compile(%gen_opts, schema=>$schema);
+        return [200, "OK", Data::Dump::dump($cd), {'cmdline.skip_format'=>1}];
+    }
+
+    my $v = $func->($schema, \%gen_opts);
 
     if ($args{show_code}) {
         $v .= "\n" unless $v =~ /\R\z/;
