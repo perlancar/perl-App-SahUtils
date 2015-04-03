@@ -16,8 +16,10 @@ $SPEC{validate_with_sah} = {
     summary => 'Validate data with Sah schema',
     description => <<'_',
 
-Can also be used to just normalize a Sah schema and show it (see
-`--show-schema`), or generate validator code and show it (see `--show-code`).
+This script is useful for testing Sah schemas. You can quickly specify from the
+CLI a schema with some data to validate it against. This script can also be used
+to just normalize a Sah schema and show it (see `--show-schema`), or generate
+validator code and show it (see `--show-code`).
 
 _
     args_groups => [
@@ -223,4 +225,3 @@ $cli->run;
 
 # ABSTRACT:
 # PODNAME:
-
