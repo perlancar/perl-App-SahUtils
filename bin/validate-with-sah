@@ -86,6 +86,15 @@ _
             schema=>['bool', is=>1],
             cmdline_aliases => {d=>{}},
         },
+        with_debug => {
+            summary => 'Generate validator with debug on',
+            description => <<'_',
+
+This means e.g. to pepper the validator code with logging statements.
+
+_
+            schema => ['bool', is=>1],
+        },
         compiler => {
             summary => "Select compiler",
             schema=>['str*', in=>[qw/perl js/]],
@@ -199,6 +208,7 @@ sub validate_with_sah {
     {
         if ($args{show_code}) { $gen_opts{source} = 1 }
         $gen_opts{return_type} = $gen_opts{return_type};
+        $gen_opts{debug} = 1 if $args{with_debug};
     }
 
     if ($args{show_raw_compile}) {
