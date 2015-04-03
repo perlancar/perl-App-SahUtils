@@ -207,7 +207,7 @@ sub validate_with_sah {
     my %gen_opts;
     {
         if ($args{show_code}) { $gen_opts{source} = 1 }
-        $gen_opts{return_type} = $gen_opts{return_type};
+        $gen_opts{return_type} = $args{return_type};
         $gen_opts{debug} = 1 if $args{with_debug};
     }
 
