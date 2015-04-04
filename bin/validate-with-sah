@@ -24,14 +24,17 @@ validator code and show it (`--show-code`).
 
 _
     args_groups => [
-        {rel=>'one_of', args=>[qw/schema schema_file/]}, # XXX req_one_of
-        {rel=>'one_of', args=>[qw/data multiple_data/]},
-        # {rel=>'depends', args=>[qw/show_linenum/], on_all=>[qw/show_code/]},
+        #{rel=>'req_one_of', args=>[qw/schema schema_file/]}, # XXX req_one_of
+        #{rel=>'req_one_of', args=>[qw/data multiple_data data_file multiple_data_file/]},
+        #{rel=>'depends', args=>[qw/show_linenum/], on_all=>[qw/show_code/]},
+        #{rel=>'depends', args=>[qw/schema_file_type/], on_all=>[qw/schema_file/]},
+        #{rel=>'depends', args=>[qw/data_file_type/], on_any=>[qw/data_file multiple_data_file/]},
     ],
     args => {
         schema => {
             schema=>'any*',
             pos=>0,
+            tags => ['category:schema-specification'],
         },
         schema_file => {
             schema=>'str*',
@@ -44,23 +47,59 @@ defaults to JSON.
 _
             cmdline_aliases => {f=>{}},
             'x.schema.entity' => 'filename',
+            tags => ['category:schema-specification'],
         },
         schema_file_type => {
             schema=>['str*', in=>[qw/json yaml/]],
             summary => 'Give hint for schema file type',
             cmdline_aliases => {t=>{}},
+            tags => ['category:schema-specification'],
         },
+
         data => {
             schema => ['any'],
             pos => 1,
+            tags => ['category:data-specification'],
         },
         multiple_data => {
+            summary => 'Validate multiple data (array of data) against schema',
             schema => ['array*', of=>'any'],
+            tags => ['category:data-specification'],
         },
+        data_file => {
+            schema=>'str*',
+            summary => 'Retrieve data from file',
+            description => <<'_',
+
+JSON and YAML formats are supported. File type will be guessed from filename,
+defaults to JSON.
+
+_
+            'x.schema.entity' => 'filename',
+            tags => ['category:data-specification'],
+        },
+        multiple_data_file => {
+            schema=>'str*',
+            summary => 'Retrieve multiple data from file',
+            description => <<'_',
+
+This is like `data_file` except that for multiple data. Data must be an array.
+
+_
+            'x.schema.entity' => 'filename',
+            tags => ['category:data-specification'],
+        },
+        data_file_type => {
+            schema=>['str*', in=>[qw/json yaml/]],
+            summary => 'Give hint for data file type',
+            tags => ['category:data-specification'],
+        },
+
         return_type => {
             schema=>['str*', in=>[qw/bool str full/]],
             default=>'str',
             cmdline_aliases => {r=>{}},
+            tags => ['category:validator-specification'],
         },
         show_schema => {
             summary => "Don't validate data, show normalized schema only",
@@ -94,12 +133,14 @@ This means e.g. to pepper the validator code with logging statements.
 
 _
             schema => ['bool', is=>1],
+            tags => ['category:validator-specification'],
         },
         compiler => {
             summary => "Select compiler",
             schema=>['str*', in=>[qw/perl js/]],
             default => 'perl',
             cmdline_aliases => {C=>{}},
+            tags => ['category:validator-specification'],
         },
         show_linenum => {
             summary => 'When showing source code, add line number',
@@ -143,6 +184,11 @@ _
             src_plang => 'bash',
             summary => 'Load schema from file',
         },
+        {
+            src => q{[[prog]] -f schema1.json --multiple-data-file datafile --data-file-type json},
+            src_plang => 'bash',
+            summary => 'Load schema and data from file',
+        },
     ],
 };
 sub validate_with_sah {
@@ -164,10 +210,10 @@ sub validate_with_sah {
             require File::Slurper;
             require JSON;
             my $ct = File::Slurper::read_text($path);
-            $schema = JSON::decode_json($ct);
+            $schema = JSON->new->allow_nonref->decode($ct);
         } elsif ($type eq 'yaml') {
             require YAML::XS;
-            $schema = YAML::XS::Load($path);
+            $schema = YAML::XS::LoadFile($path);
         } else {
             return [400, "Unknown schema file type '$type', please specify json/yaml"];
         }
@@ -228,23 +274,61 @@ sub validate_with_sah {
         return [200, "OK", $v, {'cmdline.skip_format'=>1}];
     }
 
+    my $data;
+    my $multiple;
     if (exists $args{data}) {
-        if ($args{show_data_with_result}) {
-            return [200, "OK", {data=>$args{data}, result=>$v->($args{data})}];
-        } else {
-            return [200, "OK", $v->($args{data})];
-        }
+        $data = $args{data};
     } elsif ($args{multiple_data}) {
-        if ($args{show_data_with_result}) {
-            return [200, "OK", [map {{data=>$_, result=>$v->($_)}} @{ $args{multiple_data} }]];
+        $data = $args{multiple_data};
+        $multiple = 1;
+    } elsif (defined($args{data_file}) || defined($args{multiple_data_file})) {
+        my $path;
+        if (defined $args{data_file}) {
+            $path = $args{data_file};
         } else {
-            return [200, "OK", [map {$v->($_)} @{ $args{multiple_data} }]];
+            $path = $args{multiple_data_file};
+            $multiple = 1;
+        }
+        my $type = $args{data_file_type};
+        if (!$type) {
+            if ($path =~ /\b(json)$/i) { $type = 'json' }
+            elsif ($path =~ /\b(yaml|yml)$/i) { $type = 'yaml' }
+            else { $type = 'json' }
+        }
+        if ($type eq 'json') {
+            require File::Slurper;
+            require JSON;
+            my $ct = File::Slurper::read_text($path);
+            $data = JSON->new->allow_nonref->decode($ct);
+        } elsif ($type eq 'yaml') {
+            require YAML::XS;
+            $data = YAML::XS::LoadFile($path);
+            use DD; dd $data;
+        } else {
+            return [400, "Unknown data file type '$type', please specify json/yaml"];
         }
     } else {
-        return [400, "Please specify 'data' or 'multiple_data'"];
+        return [400, "Please specify 'data' or 'multiple_data' or 'data_file' or 'multiple_data_file'"];
+    }
+    if ($multiple) {
+        return [400, "Multiple data must be an array"] unless ref($data) eq 'ARRAY';
     }
 
-    [200, "OK"];
+    if ($multiple) {
+        if ($args{show_data_with_result}) {
+            return [200, "OK", [map {{data=>$_, result=>$v->($_)}} @$data]];
+        } else {
+            return [200, "OK", [map {$v->($_)} @$data]];
+        }
+    } else {
+        if ($args{show_data_with_result}) {
+            return [200, "OK", {data=>$data, result=>$v->($data)}];
+        } else {
+            return [200, "OK", $v->($data)];
+        }
+    }
+
+    [500, "BUG: This should not be reached"];
 }
 
 my $cli = Perinci::CmdLine::Any->new(
