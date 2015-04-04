@@ -303,7 +303,6 @@ sub validate_with_sah {
         } elsif ($type eq 'yaml') {
             require YAML::XS;
             $data = YAML::XS::LoadFile($path);
-            use DD; dd $data;
         } else {
             return [400, "Unknown data file type '$type', please specify json/yaml"];
         }

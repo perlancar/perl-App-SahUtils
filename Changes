@@ -1,5 +1,13 @@
 Revision history for App-SahUtils
 
+0.05    2015-04-04 (PERLANCAR)
+
+	- validate-with-sah: Add options --data-file, --multiple-data-file,
+          --data-file-type.
+
+        - A couple of bug fixes.
+
+
 0.04    2015-04-04 (PERLANCAR)
 
 	- [Bugfix] Typo.
