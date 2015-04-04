@@ -26,7 +26,7 @@ _
     args_groups => [
         #{rel=>'req_one_of', args=>[qw/schema schema_file/]}, # XXX req_one_of
         #{rel=>'req_one_of', args=>[qw/data multiple_data data_file multiple_data_file/]},
-        #{rel=>'depends', args=>[qw/show_linenum/], on_all=>[qw/show_code/]},
+        #{rel=>'depends', args=>[qw/linenum/], on_all=>[qw/show_code/]},
         #{rel=>'depends', args=>[qw/schema_file_type/], on_all=>[qw/schema_file/]},
         #{rel=>'depends', args=>[qw/data_file_type/], on_any=>[qw/data_file multiple_data_file/]},
     ],
@@ -142,8 +142,8 @@ _
             cmdline_aliases => {C=>{}},
             tags => ['category:validator-specification'],
         },
-        show_linenum => {
-            summary => 'When showing source code, add line number',
+        linenum => {
+            summary => 'When showing source code, add line numbers',
             schema=>['bool', is=>1],
             cmdline_aliases => {l=>{}},
         },
@@ -267,7 +267,7 @@ sub validate_with_sah {
 
     if ($args{show_code}) {
         $v .= "\n" unless $v =~ /\R\z/;
-        if ($args{show_linenum}) {
+        if ($args{linenum}) {
             require String::LineNumber;
             $v = String::LineNumber::linenum($v);
         }
