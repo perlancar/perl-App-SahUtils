@@ -105,17 +105,20 @@ _
             summary => "Don't validate data, show normalized schema only",
             schema=>['bool', is=>1],
             cmdline_aliases => {s=>{}},
+            tags => ['category:action-selection'],
         },
         show_raw_compile => {
             summary => "Don't validate data, show raw compilation result only",
             schema=>['bool', is=>1],
+            tags => ['category:action-selection'],
         },
         show_code => {
             summary => "Don't validate data, show generated validator code only",
             schema=>['bool', is=>1],
             cmdline_aliases => {c=>{}},
+            tags => ['category:action-selection'],
         },
-        show_data_with_result => {
+        data_with_result => {
             summary => "Show data alongside with validation result",
             description => <<'_',
 
@@ -124,6 +127,7 @@ The default is to show the validation result only.
 _
             schema=>['bool', is=>1],
             cmdline_aliases => {d=>{}},
+            tags => ['category:output'],
         },
         with_debug => {
             summary => 'Generate validator with debug on',
@@ -146,6 +150,7 @@ _
             summary => 'When showing source code, add line numbers',
             schema=>['bool', is=>1],
             cmdline_aliases => {l=>{}},
+            tags => ['category:output'],
         },
     },
     examples => [
@@ -314,13 +319,13 @@ sub validate_with_sah {
     }
 
     if ($multiple) {
-        if ($args{show_data_with_result}) {
+        if ($args{data_with_result}) {
             return [200, "OK", [map {{data=>$_, result=>$v->($_)}} @$data]];
         } else {
             return [200, "OK", [map {$v->($_)} @$data]];
         }
     } else {
-        if ($args{show_data_with_result}) {
+        if ($args{data_with_result}) {
             return [200, "OK", {data=>$data, result=>$v->($data)}];
         } else {
             return [200, "OK", $v->($data)];
