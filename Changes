@@ -1,5 +1,14 @@
 Revision history for App-SahUtils
 
+0.06    2015-04-14 (PERLANCAR)
+
+        - [Incompatible change] Rename --show-linenum to --linenum,
+          --show-data-with-result to --data-with-result to be more consistent
+          (action options start with --show-*).
+
+        - Add option: --pp.
+
+
 0.05    2015-04-04 (PERLANCAR)
 
 	- validate-with-sah: Add options --data-file, --multiple-data-file,
