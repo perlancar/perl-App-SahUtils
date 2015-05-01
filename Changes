@@ -1,5 +1,12 @@
 Revision history for App-SahUtils
 
+0.07    2015-05-01 (PERLANCAR)
+
+	- No functional changes.
+
+	- Update to Rinci 1.1.77 (args_groups -> args_rels).
+
+
 0.06    2015-04-14 (PERLANCAR)
 
         - [Incompatible change] Rename --show-linenum to --linenum,
