@@ -23,13 +23,17 @@ schema and show the raw compilation result (`--show-raw-compile`), or generate
 validator code and show it (`--show-code`).
 
 _
-    args_groups => [
-        #{rel=>'req_one_of', args=>[qw/schema schema_file/]}, # XXX req_one_of
-        #{rel=>'req_one_of', args=>[qw/data multiple_data data_file multiple_data_file/]},
-        #{rel=>'depends', args=>[qw/linenum/], on_all=>[qw/show_code/]},
-        #{rel=>'depends', args=>[qw/schema_file_type/], on_all=>[qw/schema_file/]},
-        #{rel=>'depends', args=>[qw/data_file_type/], on_any=>[qw/data_file multiple_data_file/]},
-    ],
+    args_rels => {
+        'req_one&' => [
+            [qw/schema schema_file/],
+            [qw/data multiple_data data_file multiple_data_file/],
+        ],
+        'dep_one&' => [
+            ['linenum', [qw/show_code/]],
+            ['schema_file_type', [qw/schema_file/]],
+            ['data_file_type', [qw/data_file multiple_data_file/]],
+        ],
+    },
     args => {
         schema => {
             schema=>'any*',
