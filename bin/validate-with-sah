@@ -25,7 +25,7 @@ validator code and show it (`--show-code`).
 _
     args_rels => {
         'choose_one&' => [
-            [qw/show_schema show_raw_compile show_code show_human show_raw_human/],
+            [qw/show_schema show_raw_compile show_code/],
         ],
         'req_one&' => [
             [qw/schema schema_file/],
@@ -123,17 +123,6 @@ _
             summary => "Don't validate data, show generated validator code only",
             schema=>['bool', is=>1],
             cmdline_aliases => {c=>{}},
-            tags => ['category:action-selection'],
-        },
-        show_human => {
-            summary => "Don't validate data, show human representation of schema",
-            schema=>['bool', is=>1],
-            cmdline_aliases => {H=>{}},
-            tags => ['category:action-selection'],
-        },
-        show_raw_human => {
-            summary => "Don't validate data, show raw human compilation result",
-            schema=>['bool', is=>1],
             tags => ['category:action-selection'],
         },
         data_with_result => {
@@ -253,17 +242,6 @@ sub validate_with_sah {
     if ($args{show_schema}) {
         require Data::Sah::Normalize;
         return [200, "OK", Data::Sah::Normalize::normalize_schema($schema)];
-    }
-
-    if ($args{show_raw_human} || $args{show_human}) {
-        require Data::Sah;
-        my $hc = Data::Sah->new->get_compiler('human');
-        my $res = $hc->compile(schema => $schema);
-        if ($args{show_raw_human}) {
-            return [200, "OK", $res];
-        } else {
-            return [200, "OK", $res->{result}];
-        }
     }
 
     my $func;

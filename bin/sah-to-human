@@ -1,0 +1,144 @@
+#!perl
+
+# DATE
+# VERSION
+
+use 5.010;
+use strict;
+use warnings;
+
+use Perinci::CmdLine::Any;
+
+our %SPEC;
+
+$SPEC{sah_to_human} = {
+    v => 1.1,
+    summary => 'Convert Sah to human text',
+    args_rels => {
+        'choose_one&' => [
+            [qw/show_schema show_raw_compile/],
+        ],
+        'req_one&' => [
+            [qw/schema schema_file/],
+        ],
+        'dep_one&' => [
+            ['schema_file_type', [qw/schema_file/]],
+        ],
+    },
+    args => {
+        schema => {
+            schema=>'any*',
+            pos=>0,
+            tags => ['category:schema-specification'],
+        },
+        schema_file => {
+            schema=>'str*',
+            summary => 'Retrieve schema from file',
+            description => <<'_',
+
+JSON and YAML formats are supported. File type will be guessed from filename,
+defaults to JSON.
+
+_
+            cmdline_aliases => {f=>{}},
+            'x.schema.entity' => 'filename',
+            tags => ['category:schema-specification'],
+        },
+        schema_file_type => {
+            schema=>['str*', in=>[qw/json yaml/]],
+            summary => 'Give hint for schema file type',
+            cmdline_aliases => {t=>{}},
+            tags => ['category:schema-specification'],
+        },
+
+        format => {
+            schema=>['str*', in=>[qw/inline_text inline_err_text markdown msg_catalog/]],
+            default=>'inline_text',
+            cmdline_aliases => {F=>{}},
+            tags => ['category:compilation-specification'],
+        },
+        show_schema => {
+            summary => "Don't convert schema, show normalized schema only",
+            schema=>['bool', is=>1],
+            cmdline_aliases => {s=>{}},
+            tags => ['category:action-selection'],
+        },
+        show_raw_compile => {
+            summary => "Don't format compilation result to final text, show raw result only",
+            schema=>['bool', is=>1],
+            tags => ['category:action-selection'],
+        },
+#        with_debug => {
+#            summary => 'Convert with debug on',
+#            description => <<'_',
+#
+#This means e.g. to pepper the validator code with logging statements.
+#
+#_
+#            schema => ['bool', is=>1],
+#            tags => ['category:validator-specification'],
+#        },
+    },
+};
+sub sah_to_human {
+    my %args = @_;
+
+    my $schema;
+    if (defined $args{schema}) {
+        return [400, "Please specify either 'schema' or 'schema_file', not both"] if defined($args{schema_file});
+        $schema = $args{schema};
+    } elsif (defined $args{schema_file}) {
+        my $path = $args{schema_file};
+        my $type = $args{schema_file_type};
+        if (!$type) {
+            if ($path =~ /\b(json)$/i) { $type = 'json' }
+            elsif ($path =~ /\b(yaml|yml)$/i) { $type = 'yaml' }
+            else { $type = 'json' }
+        }
+        if ($type eq 'json') {
+            require File::Slurper;
+            require JSON;
+            my $ct = File::Slurper::read_text($path);
+            $schema = JSON->new->allow_nonref->decode($ct);
+        } elsif ($type eq 'yaml') {
+            require YAML::XS;
+            $schema = YAML::XS::LoadFile($path);
+        } else {
+            return [400, "Unknown schema file type '$type', please specify json/yaml"];
+        }
+    } else {
+        return [400, "Please specify 'schema' or 'schema_file'"];
+    }
+
+    if ($args{show_schema}) {
+        require Data::Sah::Normalize;
+        return [200, "OK", Data::Sah::Normalize::normalize_schema($schema)];
+    }
+
+    require Data::Sah;
+    my $sah = Data::Sah->new;
+    my $hc  = $sah->get_compiler('human');
+
+    my %compile_opts;
+    $compile_opts{schema} = $schema;
+    $compile_opts{format} = $args{format};
+    #$gen_opts{debug} = 1 if $args{with_debug};
+
+    my $cd = $hc->compile(%compile_opts);
+
+    if ($args{show_raw_compile}) {
+        require Data::Dump;
+        return [200, "OK", Data::Dump::dump($cd), {'cmdline.skip_format'=>1}];
+    }
+
+    return [200, "OK", $cd->{result}];
+}
+
+my $cli = Perinci::CmdLine::Any->new(
+    url => '/main/sah_to_human',
+);
+$cli->{common_opts}{naked_res}{default} = 1;
+$cli->run;
+
+# ABSTRACT:
+# PODNAME:
