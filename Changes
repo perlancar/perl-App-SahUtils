@@ -1,5 +1,12 @@
 Revision history for App-SahUtils
 
+0.09    2015-05-04 (PERLANCAR)
+
+	- Remove --show-human & --show-raw-human options from
+	  validate-with-sah, instead a new utility is added
+	  bin/sah-to-human for this (with more options).
+
+
 0.08    2015-05-02 (PERLANCAR)
 
 	- Add options --show-human, --show-raw-human.
