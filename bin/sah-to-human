@@ -132,8 +132,6 @@ sub sah_to_human {
     $compile_opts{hash_values} = $args{hash_values};
     #$gen_opts{debug} = 1 if $args{with_debug};
 
-    use DD; dd \%compile_opts;
-
     my $cd = $hc->compile(%compile_opts);
 
     if ($args{show_raw_compile}) {
