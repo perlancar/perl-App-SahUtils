@@ -55,8 +55,15 @@ _
             schema=>['str*', in=>[qw/inline_text inline_err_text markdown msg_catalog/]],
             default=>'inline_text',
             cmdline_aliases => {F=>{}},
-            tags => ['category:compilation-specification'],
+            tags => ['category:compilation'],
         },
+        hash_values => {
+            summary => "To be passed during compilation",
+            schema=>['hash*'],
+            #cmdline_aliases => {H=>{}},
+            tags => ['category:compilation'],
+        },
+
         show_schema => {
             summary => "Don't convert schema, show normalized schema only",
             schema=>['bool', is=>1],
@@ -122,7 +129,10 @@ sub sah_to_human {
     my %compile_opts;
     $compile_opts{schema} = $schema;
     $compile_opts{format} = $args{format};
+    $compile_opts{hash_values} = $args{hash_values};
     #$gen_opts{debug} = 1 if $args{with_debug};
+
+    use DD; dd \%compile_opts;
 
     my $cd = $hc->compile(%compile_opts);
 
