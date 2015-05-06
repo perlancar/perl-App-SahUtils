@@ -31,7 +31,7 @@ _
             [qw/schema schema_file/],
             [qw/data multiple_data data_file multiple_data_file/],
         ],
-        'dep_one&' => [
+        'dep_any&' => [
             ['linenum', [qw/show_code/]],
             ['schema_file_type', [qw/schema_file/]],
             ['data_file_type', [qw/data_file multiple_data_file/]],
