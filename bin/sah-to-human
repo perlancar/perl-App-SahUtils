@@ -21,9 +21,10 @@ $SPEC{sah_to_human} = {
         'req_one&' => [
             [qw/schema schema_file/],
         ],
-        'dep_any&' => [
-            ['schema_file_type', [qw/schema_file/]],
-        ],
+        # doesn't work yet?
+        #'dep_any&' => [
+        #    ['schema_file_type', [qw/schema_file/]],
+        #],
     },
     args => {
         schema => {

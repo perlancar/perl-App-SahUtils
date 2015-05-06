@@ -1,5 +1,13 @@
 Revision history for App-SahUtils
 
+0.11    2015-05-06 (PERLANCAR)
+
+        - No functional changes.
+
+        - Tweak Rinci metadata (fix/update args_rels metadata, dep_one ->
+          dep_any).
+
+
 0.10    2015-05-06 (PERLANCAR)
 
 	- Add option --hash-values to pass to compile() (Data::Sah 0.55).
