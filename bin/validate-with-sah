@@ -26,11 +26,12 @@ _
     args_rels => {
         'choose_one&' => [
             [qw/show_schema show_raw_compile show_code/],
+            [qw/data multiple_data data_file multiple_data_file/],
         ],
         'req_one&' => [
             [qw/schema schema_file/],
-            [qw/data multiple_data data_file multiple_data_file/],
         ],
+        # XXX: data multiple_data data_file multiple_data_file only required if there are now show_* arguments
         # doesn't work yet?
         #'dep_any&' => [
         #    ['linenum', [qw/show_code/]],
