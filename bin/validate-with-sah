@@ -149,7 +149,13 @@ _
             tags => ['category:validator-specification'],
         },
         pp => {
-            summary => 'Generate Perl validator that avoids the use of XS module',
+            summary => 'Generate Perl validator that avoids the use of XS modules',
+            schema => ['bool', is=>1],
+            tags => ['category:validator-specification'],
+            # XXX only relevant when compiler=perl
+        },
+        core => {
+            summary => 'Generate Perl validator that avoids the use of non-core modules',
             schema => ['bool', is=>1],
             tags => ['category:validator-specification'],
             # XXX only relevant when compiler=perl
@@ -276,6 +282,7 @@ sub validate_with_sah {
         $gen_opts{return_type} = $args{return_type};
         $gen_opts{debug} = 1 if $args{with_debug};
         $gen_opts{pp} = 1 if $args{pp};
+        $gen_opts{core} = 1 if $args{core};
     }
 
     if ($args{show_raw_compile}) {
