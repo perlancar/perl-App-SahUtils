@@ -160,6 +160,12 @@ _
             tags => ['category:validator-specification'],
             # XXX only relevant when compiler=perl
         },
+        core_or_pp => {
+            summary => 'Generate Perl validator that only uses core or pure-perl modules',
+            schema => ['bool', is=>1],
+            tags => ['category:validator-specification'],
+            # XXX only relevant when compiler=perl
+        },
         compiler => {
             summary => "Select compiler",
             schema=>['str*', in=>[qw/perl js/]],
@@ -283,6 +289,7 @@ sub validate_with_sah {
         $gen_opts{debug} = 1 if $args{with_debug};
         $gen_opts{pp} = 1 if $args{pp};
         $gen_opts{core} = 1 if $args{core};
+        $gen_opts{core_or_pp} = 1 if $args{core_or_pp};
     }
 
     if ($args{show_raw_compile}) {
