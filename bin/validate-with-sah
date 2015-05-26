@@ -166,6 +166,12 @@ _
             tags => ['category:validator-specification'],
             # XXX only relevant when compiler=perl
         },
+        no_modules => {
+            summary => 'Generate Perl validator that does not use modules',
+            schema => ['bool', is=>1],
+            tags => ['category:validator-specification'],
+            # XXX only relevant when compiler=perl
+        },
         compiler => {
             summary => "Select compiler",
             schema=>['str*', in=>[qw/perl js/]],
@@ -290,6 +296,7 @@ sub validate_with_sah {
         $gen_opts{pp} = 1 if $args{pp};
         $gen_opts{core} = 1 if $args{core};
         $gen_opts{core_or_pp} = 1 if $args{core_or_pp};
+        $gen_opts{no_modules} = 1 if $args{no_modules};
     }
 
     if ($args{show_raw_compile}) {
