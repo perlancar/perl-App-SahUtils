@@ -1,5 +1,12 @@
 Revision history for App-SahUtils
 
+0.16    2016-01-18 (PERLANCAR)
+
+        - No functional changes.
+
+        - [build] Rebuild to fix POD section ordering.
+
+
 0.15    2015-09-03 (PERLANCAR)
 
 	- No functional changes.
