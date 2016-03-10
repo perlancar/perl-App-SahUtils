@@ -246,9 +246,9 @@ sub validate_with_sah {
         }
         if ($type eq 'json') {
             require File::Slurper;
-            require JSON;
+            require JSON::MaybeXS;
             my $ct = File::Slurper::read_text($path);
-            $schema = JSON->new->allow_nonref->decode($ct);
+            $schema = JSON::MaybeXS->new->allow_nonref->decode($ct);
         } elsif ($type eq 'yaml') {
             require YAML::XS;
             $schema = YAML::XS::LoadFile($path);
@@ -339,9 +339,9 @@ sub validate_with_sah {
         }
         if ($type eq 'json') {
             require File::Slurper;
-            require JSON;
+            require JSON::MaybeXS;
             my $ct = File::Slurper::read_text($path);
-            $data = JSON->new->allow_nonref->decode($ct);
+            $data = JSON::MaybeXS->new->allow_nonref->decode($ct);
         } elsif ($type eq 'yaml') {
             require YAML::XS;
             $data = YAML::XS::LoadFile($path);
