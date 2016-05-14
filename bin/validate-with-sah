@@ -380,3 +380,10 @@ $cli->run;
 
 # ABSTRACT:
 # PODNAME:
+
+=head1 FAQ
+
+=head2 When there is an error (e.g. in generating validator code, in validating) the program returns undef/null, how do I see the error message?
+
+Pass `--no-naked-res` to see the error code and error message. The default is
+naked for simpler output.
