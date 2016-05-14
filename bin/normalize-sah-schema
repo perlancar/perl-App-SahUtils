@@ -1,0 +1,11 @@
+#!perl
+
+use Data::Dump::Color;
+
+@ARGV == 1 or die "Usage: $0 <sah-schema-in-perl-code>\n";
+eval "\$sch = $ARGV[0]";
+die if $@;
+
+require Data::Sah::Normalize;
+my $nsch = Data::Sah::Normalize::normalize_schema($sch);
+dd $nsch;
