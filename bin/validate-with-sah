@@ -105,7 +105,7 @@ _
         },
 
         return_type => {
-            schema=>['str*', in=>[qw/bool str full/]],
+            schema=>['str*', in=>[qw/bool bool+val str str+val full/]],
             default=>'str',
             cmdline_aliases => {r=>{}},
             tags => ['category:validator-specification'],
