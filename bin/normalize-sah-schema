@@ -1,5 +1,8 @@
 #!perl
 
+# DATE
+# VERSION
+
 use Data::Dump::Color;
 
 @ARGV == 1 or die "Usage: $0 <sah-schema-in-perl-code>\n";
@@ -9,3 +12,14 @@ die if $@;
 require Data::Sah::Normalize;
 my $nsch = Data::Sah::Normalize::normalize_schema($sch);
 dd $nsch;
+
+# ABSTRACT: Normalize Sah schema
+# PODNAME:
+
+=head1 SYNOPSIS
+
+ % normalize-sah-schema '"int"'
+ ["int",{},{}]
+
+ % normalize-sah-schema '["int", "min", 1]'
+ ["int",{"min":1},{}]

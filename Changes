@@ -1,5 +1,12 @@
 Revision history for App-SahUtils
 
+0.18    2016-05-14 (PERLANCAR)
+
+	- Add script: normalize-sah-schema.
+
+	- Allow return_type bool+val & str+val (Data::Sah 0.76).
+
+
 0.17    2016-03-10 (PERLANCAR)
 
 	- Replace JSON with JSON::MaybeXS.
