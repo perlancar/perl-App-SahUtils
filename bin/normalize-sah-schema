@@ -19,7 +19,7 @@ dd $nsch;
 =head1 SYNOPSIS
 
  % normalize-sah-schema '"int"'
- ["int",{},{}]
+ ["int", {}, {}]
 
- % normalize-sah-schema '["int", "min", 1]'
- ["int",{"min":1},{}]
+ % normalize-sah-schema '["int", min=>1]'
+ ["int", { min => 1 }, {}]
