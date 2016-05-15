@@ -1,5 +1,10 @@
 Revision history for App-SahUtils
 
+0.20    2016-05-15 (PERLANCAR)
+
+	- Add script: coerce-with-sah.
+
+
 0.19    2016-05-15 (PERLANCAR)
 
 	- By default, show result using Data::Dump instead of JSON to
