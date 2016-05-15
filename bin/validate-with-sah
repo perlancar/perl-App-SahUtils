@@ -365,8 +365,8 @@ sub validate_with_sah {
             $res = [400, "Please specify 'data' or 'multiple_data' or 'data_file' or 'multiple_data_file'"];
             last GET_RESULT;
         }
-        if ($multiple) {
-            $res = [400, "Multiple data must be an array"] unless ref($data) eq 'ARRAY';
+        if ($multiple && ref($data) ne 'ARRAY') {
+            $res = [400, "Multiple data must be an array"];
             last GET_RESULT;
         }
 
