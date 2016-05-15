@@ -1,5 +1,13 @@
 Revision history for App-SahUtils
 
+0.19    2016-05-15 (PERLANCAR)
+
+	- By default, show result using Data::Dump instead of JSON to
+	  preserve more data.
+
+	- Fix example in Synopsis.
+
+
 0.18    2016-05-14 (PERLANCAR)
 
 	- Add script: normalize-sah-schema.
