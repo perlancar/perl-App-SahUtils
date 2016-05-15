@@ -232,148 +232,175 @@ _
 sub validate_with_sah {
     my %args = @_;
 
-    my $schema;
-    if (defined $args{schema}) {
-        return [400, "Please specify either 'schema' or 'schema_file', not both"] if defined($args{schema_file});
-        $schema = $args{schema};
-    } elsif (defined $args{schema_file}) {
-        my $path = $args{schema_file};
-        my $type = $args{schema_file_type};
-        if (!$type) {
-            if ($path =~ /\b(json)$/i) { $type = 'json' }
-            elsif ($path =~ /\b(yaml|yml)$/i) { $type = 'yaml' }
-            else { $type = 'json' }
-        }
-        if ($type eq 'json') {
-            require File::Slurper;
-            require JSON::MaybeXS;
-            my $ct = File::Slurper::read_text($path);
-            $schema = JSON::MaybeXS->new->allow_nonref->decode($ct);
-        } elsif ($type eq 'yaml') {
-            require YAML::XS;
-            $schema = YAML::XS::LoadFile($path);
-        } else {
-            return [400, "Unknown schema file type '$type', please specify json/yaml"];
-        }
-    } else {
-        return [400, "Please specify 'schema' or 'schema_file'"];
-    }
-
-    if ($args{show_schema}) {
-        require Data::Sah::Normalize;
-        return [200, "OK", Data::Sah::Normalize::normalize_schema($schema)];
-    }
-
-    my $func;
-    my $obj;
+    my $res;
+  GET_RESULT:
     {
-        no strict 'refs';
-        my $c = $args{compiler};
-        if ($c eq 'perl') {
-            require Data::Sah;
-            if ($args{show_raw_compile}) {
-                $obj = Data::Sah->new->get_compiler('perl');
-            } else {
-                $func = \&{"Data::Sah::gen_validator"};
+        my $schema;
+        if (defined $args{schema}) {
+            if (defined $args{schema_file}) {
+                $res = [400, "Please specify either 'schema' or 'schema_file', not both"];
+                last GET_RESULT;
             }
-        } elsif ($c eq 'js') {
-            if ($args{show_raw_compile}) {
-                $obj = Data::Sah->new->get_compiler('perl');
+            $schema = $args{schema};
+        } elsif (defined $args{schema_file}) {
+            my $path = $args{schema_file};
+            my $type = $args{schema_file_type};
+            if (!$type) {
+                if ($path =~ /\b(json)$/i) { $type = 'json' }
+                elsif ($path =~ /\b(yaml|yml)$/i) { $type = 'yaml' }
+                else { $type = 'json' }
+            }
+            if ($type eq 'json') {
+                require File::Slurper;
+                require JSON::MaybeXS;
+                my $ct = File::Slurper::read_text($path);
+                $schema = JSON::MaybeXS->new->allow_nonref->decode($ct);
+            } elsif ($type eq 'yaml') {
+                require YAML::XS;
+                $schema = YAML::XS::LoadFile($path);
             } else {
-                require Data::Sah::JS;
-                $func = \&{"Data::Sah::JS::gen_validator"};
+                $res = [400, "Unknown schema file type '$type', please specify json/yaml"];
+                last GET_RESULT;
             }
         } else {
-            return [400, "Unknown compiler '$c', please specify perl/js"];
+            $res = [400, "Please specify 'schema' or 'schema_file'"];
+            last GET_RESULT;
         }
-    }
 
-    my %gen_opts;
-    {
-        $gen_opts{source} = 1 if $args{show_code};
-        $gen_opts{return_type} = $args{return_type};
-        $gen_opts{debug} = 1 if $args{with_debug};
-        $gen_opts{pp} = 1 if $args{pp};
-        $gen_opts{core} = 1 if $args{core};
-        $gen_opts{core_or_pp} = 1 if $args{core_or_pp};
-        $gen_opts{no_modules} = 1 if $args{no_modules};
-    }
-
-    if ($args{show_raw_compile}) {
-        require Data::Dump;
-        my $cd = $obj->compile(%gen_opts, schema=>$schema);
-        return [200, "OK", Data::Dump::dump($cd), {'cmdline.skip_format'=>1}];
-    }
-
-    my $v = $func->($schema, \%gen_opts);
-
-    if ($args{show_code}) {
-        $v .= "\n" unless $v =~ /\R\z/;
-        if ($args{linenum}) {
-            require String::LineNumber;
-            $v = String::LineNumber::linenum($v);
+        if ($args{show_schema}) {
+            require Data::Sah::Normalize;
+            $res = [200, "OK", Data::Sah::Normalize::normalize_schema($schema)];
+            last GET_RESULT;
         }
-        return [200, "OK", $v, {'cmdline.skip_format'=>1}];
-    }
 
-    my $data;
-    my $multiple;
-    if (exists $args{data}) {
-        $data = $args{data};
-    } elsif ($args{multiple_data}) {
-        $data = $args{multiple_data};
-        $multiple = 1;
-    } elsif (defined($args{data_file}) || defined($args{multiple_data_file})) {
-        my $path;
-        if (defined $args{data_file}) {
-            $path = $args{data_file};
-        } else {
-            $path = $args{multiple_data_file};
+        my $func;
+        my $obj;
+        {
+            no strict 'refs';
+            my $c = $args{compiler};
+            if ($c eq 'perl') {
+                require Data::Sah;
+                if ($args{show_raw_compile}) {
+                    $obj = Data::Sah->new->get_compiler('perl');
+                } else {
+                    $func = \&{"Data::Sah::gen_validator"};
+                }
+            } elsif ($c eq 'js') {
+                if ($args{show_raw_compile}) {
+                    $obj = Data::Sah->new->get_compiler('perl');
+                } else {
+                    require Data::Sah::JS;
+                    $func = \&{"Data::Sah::JS::gen_validator"};
+                }
+            } else {
+                $res = [400, "Unknown compiler '$c', please specify perl/js"];
+                last GET_RESULT;
+            }
+        }
+
+        my %gen_opts;
+        {
+            $gen_opts{source} = 1 if $args{show_code};
+            $gen_opts{return_type} = $args{return_type};
+            $gen_opts{debug} = 1 if $args{with_debug};
+            $gen_opts{pp} = 1 if $args{pp};
+            $gen_opts{core} = 1 if $args{core};
+            $gen_opts{core_or_pp} = 1 if $args{core_or_pp};
+            $gen_opts{no_modules} = 1 if $args{no_modules};
+        }
+
+        if ($args{show_raw_compile}) {
+            require Data::Dump;
+            my $cd = $obj->compile(%gen_opts, schema=>$schema);
+            $res = [200, "OK", Data::Dump::dump($cd), {'cmdline.skip_format'=>1}];
+            last GET_RESULT;
+        }
+
+        my $v = $func->($schema, \%gen_opts);
+
+        if ($args{show_code}) {
+            $v .= "\n" unless $v =~ /\R\z/;
+            if ($args{linenum}) {
+                require String::LineNumber;
+                $v = String::LineNumber::linenum($v);
+            }
+            $res = [200, "OK", $v, {'cmdline.skip_format'=>1}];
+            last GET_RESULT;
+        }
+
+        my $data;
+        my $multiple;
+        if (exists $args{data}) {
+            $data = $args{data};
+        } elsif ($args{multiple_data}) {
+            $data = $args{multiple_data};
             $multiple = 1;
-        }
-        my $type = $args{data_file_type};
-        if (!$type) {
-            if ($path =~ /\b(json)$/i) { $type = 'json' }
-            elsif ($path =~ /\b(yaml|yml)$/i) { $type = 'yaml' }
-            else { $type = 'json' }
-        }
-        if ($type eq 'json') {
-            require File::Slurper;
-            require JSON::MaybeXS;
-            my $ct = File::Slurper::read_text($path);
-            $data = JSON::MaybeXS->new->allow_nonref->decode($ct);
-        } elsif ($type eq 'yaml') {
-            require YAML::XS;
-            $data = YAML::XS::LoadFile($path);
+        } elsif (defined($args{data_file}) || defined($args{multiple_data_file})) {
+            my $path;
+            if (defined $args{data_file}) {
+                $path = $args{data_file};
+            } else {
+                $path = $args{multiple_data_file};
+                $multiple = 1;
+            }
+            my $type = $args{data_file_type};
+            if (!$type) {
+                if ($path =~ /\b(json)$/i) { $type = 'json' }
+                elsif ($path =~ /\b(yaml|yml)$/i) { $type = 'yaml' }
+                else { $type = 'json' }
+            }
+            if ($type eq 'json') {
+                require File::Slurper;
+                require JSON::MaybeXS;
+                my $ct = File::Slurper::read_text($path);
+                $data = JSON::MaybeXS->new->allow_nonref->decode($ct);
+            } elsif ($type eq 'yaml') {
+                require YAML::XS;
+                $data = YAML::XS::LoadFile($path);
+            } else {
+                $res = [400, "Unknown data file type '$type', please specify json/yaml"];
+                last GET_RESULT;
+            }
         } else {
-            return [400, "Unknown data file type '$type', please specify json/yaml"];
+            $res = [400, "Please specify 'data' or 'multiple_data' or 'data_file' or 'multiple_data_file'"];
+            last GET_RESULT;
         }
-    } else {
-        return [400, "Please specify 'data' or 'multiple_data' or 'data_file' or 'multiple_data_file'"];
-    }
-    if ($multiple) {
-        return [400, "Multiple data must be an array"] unless ref($data) eq 'ARRAY';
-    }
+        if ($multiple) {
+            $res = [400, "Multiple data must be an array"] unless ref($data) eq 'ARRAY';
+            last GET_RESULT;
+        }
 
-    if ($multiple) {
-        if ($args{data_with_result}) {
-            return [200, "OK", [map {{data=>$_, result=>$v->($_)}} @$data]];
+        if ($multiple) {
+            if ($args{data_with_result}) {
+                $res = [200, "OK", [map {{data=>$_, result=>$v->($_)}} @$data]];
+            } else {
+                $res = [200, "OK", [map {$v->($_)} @$data]];
+            }
+            last GET_RESULT;
         } else {
-            return [200, "OK", [map {$v->($_)} @$data]];
+            if ($args{data_with_result}) {
+                $res = [200, "OK", {data=>$data, result=>$v->($data)}];
+            } else {
+                $res = [200, "OK", $v->($data)];
+            }
+            last GET_RESULT;
         }
-    } else {
-        if ($args{data_with_result}) {
-            return [200, "OK", {data=>$data, result=>$v->($data)}];
-        } else {
-            return [200, "OK", $v->($data)];
-        }
-    }
 
-    [500, "BUG: This should not be reached"];
+        die "BUG: This should not be reached";
+    } # GET_RESULT
+
+    my $outputs_text = $args{-cmdline_r} &&
+        ($args{-cmdline_r}{format} // 'text') =~ /text/;
+    if ($outputs_text && $res->[0] == 200 && ref($res->[2])) {
+        require Data::Dump;
+        $res->[2] = Data::Dump::dump($res->[2]);
+    }
+    $res;
 }
 
 my $cli = Perinci::CmdLine::Any->new(
     url => '/main/validate_with_sah',
+    pass_cmdline_object => 1,
 );
 $cli->{common_opts}{naked_res}{default} = 1;
 $cli->run;
