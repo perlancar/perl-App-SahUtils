@@ -1,0 +1,252 @@
+#!perl
+
+# DATE
+# VERSION
+
+use 5.010;
+use strict;
+use warnings;
+
+use Perinci::CmdLine::Any;
+
+our %SPEC;
+
+$SPEC{coerce_with_sah} = {
+    v => 1.1,
+    summary => 'Coerce data',
+    args_rels => {
+        'choose_one&' => [
+            [qw/show_code/],
+            [qw/data_as_json multiple_data_as_json
+                data_as_perl multiple_data_as_perl/],
+        ],
+    },
+    args => {
+        type => {
+            schema => 'str*',
+            req => 1,
+            pos => 0,
+            tags => ['category:coercer-specification'],
+        },
+        coerce_to => {
+            schema => 'str*',
+            tags => ['category:coercer-specification'],
+        },
+        coerce_from => {
+            schema => ['array*', of=>'str*'],
+            tags => ['category:coercer-specification'],
+        },
+        dont_coerce_from => {
+            schema => ['array*', of=>'str*'],
+            tags => ['category:coercer-specification'],
+        },
+
+        data_as_json => {
+            summary => 'Data as JSON',
+            schema => ['str*'],
+            tags => ['category:data-specification'],
+        },
+        multiple_data_as_json => {
+            summary => 'Multiple data as JSON code, JSON data must be an array',
+            schema => ['str*'],
+            tags => ['category:data-specification'],
+        },
+        data_as_perl => {
+            summary => 'Data as Perl code',
+            schema => ['str*'],
+            tags => ['category:data-specification'],
+        },
+        multiple_data_as_perl => {
+            summary => 'Multiple data as Perl code, perl code should return arrayref',
+            schema => ['str*'],
+            tags => ['category:data-specification'],
+        },
+
+        show_code => {
+            summary => "Don't coerce data, show generated coercer code only",
+            schema=>['bool', is=>1],
+            cmdline_aliases => {c=>{}},
+            tags => ['category:action-selection'],
+        },
+        data_with_result => {
+            summary => "Show data alongside with coerced result",
+            description => <<'_',
+
+The default is to show the coerced result only.
+
+_
+            schema=>['bool', is=>1],
+            cmdline_aliases => {d=>{}},
+            tags => ['category:output'],
+        },
+#        with_debug => {
+#            summary => 'Generate coercer with debug on',
+#            description => <<'_',
+#
+#This means e.g. to pepper the coercer code with logging statements.
+#
+#_
+#            schema => ['bool', is=>1],
+#            tags => ['category:coercer-specification'],
+#        },
+#        pp => {
+#            summary => 'Generate coercer code that avoids the use of XS modules',
+#            schema => ['bool', is=>1],
+#            tags => ['category:coercer-specification'],
+#            # XXX only relevant when compiler=perl
+#        },
+#        core => {
+#            summary => 'Generate Perl validator that avoids the use of non-core modules',
+#            schema => ['bool', is=>1],
+#            tags => ['category:coercer-specification'],
+#            # XXX only relevant when compiler=perl
+#        },
+#        core_or_pp => {
+#            summary => 'Generate Perl validator that only uses core or pure-perl modules',
+#            schema => ['bool', is=>1],
+#            tags => ['category:coercer-specification'],
+#            # XXX only relevant when compiler=perl
+#        },
+#        no_modules => {
+#            summary => 'Generate Perl validator that does not use modules',
+#            schema => ['bool', is=>1],
+#            tags => ['category:coercer-specification'],
+#            # XXX only relevant when compiler=perl
+#        },
+        compiler => {
+            summary => "Select compiler",
+            schema=>['str*', in=>[qw/perl/]], # XXX js
+            default => 'perl',
+            cmdline_aliases => {C=>{}},
+            tags => ['category:coercer-specification'],
+        },
+#        linenum => {
+#            summary => 'When showing source code, add line numbers',
+#            schema=>['bool', is=>1],
+#            cmdline_aliases => {l=>{}},
+#            tags => ['category:output'],
+#        },
+    },
+    examples => [
+        {
+            src => q([[prog]] date --coerce-to DateTime --multiple-data-as-perl '("2016-05-15", "1463328281")'),
+            src_plang => 'bash',
+        },
+        {
+            src => q([[prog]] date --show-code),
+            src_plang => 'bash',
+        },
+    ],
+};
+sub coerce_with_sah {
+    my %args = @_;
+
+    my $res;
+  GET_RESULT:
+    {
+        my $gen_res;
+        {
+            no strict 'refs';
+            my $c = $args{compiler};
+            my %gen_args = (
+                type => $args{type},
+                (coerce_to => $args{coerce_to}) x !!defined($args{coerce_to}),
+                (coerce_from => $args{coerce_to}) x !!defined($args{coerce_from}),
+                (dont_coerce_from => $args{dont_coerce_from}) x !!defined($args{dont_coerce_from}),
+            );
+            $gen_args{source} = 1 if $args{show_code};
+            #$gen_opts{debug} = 1 if $args{with_debug};
+            #$gen_opts{pp} = 1 if $args{pp};
+            #$gen_opts{core} = 1 if $args{core};
+            #$gen_opts{core_or_pp} = 1 if $args{core_or_pp};
+            #$gen_opts{no_modules} = 1 if $args{no_modules};
+            if ($c eq 'perl') {
+                require Data::Sah::Coerce;
+                $gen_res = Data::Sah::Coerce::gen_coercer(%gen_args);
+            #} elsif ($c eq 'js') {
+            #    $gen_res = Data::Sah::CoerceJS::gen_coercer(%gen_args);
+            } else {
+                $res = [400, "Unknown compiler '$c', please specify perl/js"];
+                last GET_RESULT;
+            }
+        }
+
+        if ($args{show_code}) {
+            $gen_res .= "\n" unless $gen_res =~ /\R\z/;
+            #if ($args{linenum}) {
+            #    require String::LineNumber;
+            #    $v = String::LineNumber::linenum($v);
+            #}
+            $res = [200, "OK", $gen_res, {'cmdline.skip_format'=>1}];
+            last GET_RESULT;
+        }
+
+        my $data;
+        my $multiple;
+        if (defined $args{data_as_json}) {
+            require JSON::MaybeXS;
+            $data = JSON::MaybeXS->new->allow_nonref->decode($args{data_as_json});
+        } elsif (defined $args{multiple_data_as_json}) {
+            require JSON::MaybeXS;
+            $data = JSON::MaybeXS->new->allow_nonref->decode($args{multiple_data_as_json});
+            $multiple = 1;
+        } elsif (defined $args{data_as_perl}) {
+            $data = eval $args{data_as_perl};
+            die if $@;
+        } elsif (defined $args{multiple_data_as_perl}) {
+            $data = eval $args{multiple_data_as_perl};
+            die if $@;
+            $multiple = 1;
+        } else {
+            $res = [400, "Please specify 'data_as_json' or 'multiple_data_as_json' or 'data_as_perl' or 'multiple_data_as_perl'"];
+            last GET_RESULT;
+        }
+        if ($multiple && ref($data) ne 'ARRAY') {
+            $res = [400, "Multiple data must be an array"];
+            last GET_RESULT;
+        }
+
+        if ($multiple) {
+            if ($args{data_with_result}) {
+                $res = [200, "OK", [map {{data=>$_, result=>$gen_res->($_)}} @$data]];
+            } else {
+                $res = [200, "OK", [map {$gen_res->($_)} @$data]];
+            }
+            last GET_RESULT;
+        } else {
+            if ($args{data_with_result}) {
+                $res = [200, "OK", {data=>$data, result=>$gen_res->($data)}];
+            } else {
+                $res = [200, "OK", $gen_res->($data)];
+            }
+            last GET_RESULT;
+        }
+
+        die "BUG: This should not be reached";
+    } # GET_RESULT
+
+    my $outputs_text = $args{-cmdline_r} &&
+        ($args{-cmdline_r}{format} // 'text') =~ /text/;
+    if ($outputs_text && $res->[0] == 200 && ref($res->[2])) {
+        require Data::Dump;
+        $res->[2] = Data::Dump::dump($res->[2]);
+   }
+    $res;
+}
+
+my $cli = Perinci::CmdLine::Any->new(
+    url => '/main/coerce_with_sah',
+    pass_cmdline_object => 1,
+);
+$cli->{common_opts}{naked_res}{default} = 1;
+$cli->run;
+
+# ABSTRACT:
+# PODNAME:
+
+=head1 FAQ
+
+=head2 When there is an error (e.g. in generating coercer code, in validating) the program returns undef/null, how do I see the error message?
+
+Pass `--no-naked-res` to see the error code and error message. The default is
+naked for simpler output.
