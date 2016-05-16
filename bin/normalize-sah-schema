@@ -27,5 +27,5 @@ dd $nsch;
 
 =head1 DESCRIPTION
 
-This script can be used to quickly produce/see the normalized form of a Sah
+This script can be used to quickly produce/see the normalized form of a L<Sah>
 schema. Both input and output are in the form of Perl code.
