@@ -23,3 +23,9 @@ dd $nsch;
 
  % normalize-sah-schema '["int", min=>1]'
  ["int", { min => 1 }, {}]
+
+
+=head1 DESCRIPTION
+
+This script can be used to quickly produce/see the normalized form of a Sah
+schema. Both input and output are in the form of Perl code.
