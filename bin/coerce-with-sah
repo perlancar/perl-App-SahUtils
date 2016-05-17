@@ -115,17 +115,17 @@ _
 #        },
         compiler => {
             summary => "Select compiler",
-            schema=>['str*', in=>[qw/perl/]], # XXX js
+            schema=>['str*', in=>[qw/perl js/]],
             default => 'perl',
             cmdline_aliases => {C=>{}},
             tags => ['category:coercer-specification'],
         },
-#        linenum => {
-#            summary => 'When showing source code, add line numbers',
-#            schema=>['bool', is=>1],
-#            cmdline_aliases => {l=>{}},
-#            tags => ['category:output'],
-#        },
+        linenum => {
+            summary => 'When showing source code, add line numbers',
+            schema=>['bool', is=>1],
+            cmdline_aliases => {l=>{}},
+            tags => ['category:output'],
+        },
     },
     examples => [
         {
@@ -163,8 +163,9 @@ sub coerce_with_sah {
             if ($c eq 'perl') {
                 require Data::Sah::Coerce;
                 $gen_res = Data::Sah::Coerce::gen_coercer(%gen_args);
-            #} elsif ($c eq 'js') {
-            #    $gen_res = Data::Sah::CoerceJS::gen_coercer(%gen_args);
+            } elsif ($c eq 'js') {
+                require Data::Sah::CoerceJS;
+                $gen_res = Data::Sah::CoerceJS::gen_coercer(%gen_args);
             } else {
                 $res = [400, "Unknown compiler '$c', please specify perl/js"];
                 last GET_RESULT;
@@ -173,10 +174,10 @@ sub coerce_with_sah {
 
         if ($args{show_code}) {
             $gen_res .= "\n" unless $gen_res =~ /\R\z/;
-            #if ($args{linenum}) {
-            #    require String::LineNumber;
-            #    $v = String::LineNumber::linenum($v);
-            #}
+            if ($args{linenum}) {
+                require String::LineNumber;
+                $v = String::LineNumber::linenum($v);
+            }
             $res = [200, "OK", $gen_res, {'cmdline.skip_format'=>1}];
             last GET_RESULT;
         }
