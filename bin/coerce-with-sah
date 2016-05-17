@@ -176,7 +176,7 @@ sub coerce_with_sah {
             $gen_res .= "\n" unless $gen_res =~ /\R\z/;
             if ($args{linenum}) {
                 require String::LineNumber;
-                $v = String::LineNumber::linenum($v);
+                $gen_res = String::LineNumber::linenum($gen_res);
             }
             $res = [200, "OK", $gen_res, {'cmdline.skip_format'=>1}];
             last GET_RESULT;
