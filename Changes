@@ -1,5 +1,10 @@
 Revision history for App-SahUtils
 
+0.21    2016-05-17 (PERLANCAR)
+
+	- coerce-with-sah: Support using JS coercer.
+
+
 0.20    2016-05-15 (PERLANCAR)
 
 	- Add script: coerce-with-sah.
