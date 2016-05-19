@@ -151,7 +151,7 @@ sub coerce_with_sah {
             my %gen_args = (
                 type => $args{type},
                 (coerce_to => $args{coerce_to}) x !!defined($args{coerce_to}),
-                (coerce_from => $args{coerce_to}) x !!defined($args{coerce_from}),
+                (coerce_from => $args{coerce_from}) x !!defined($args{coerce_from}),
                 (dont_coerce_from => $args{dont_coerce_from}) x !!defined($args{dont_coerce_from}),
             );
             $gen_args{source} = 1 if $args{show_code};
