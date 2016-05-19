@@ -1,5 +1,10 @@
 Revision history for App-SahUtils
 
+0.22    2016-05-19 (PERLANCAR)
+
+	- Fix typo when passing --coerce-from to gen_coercer().
+
+
 0.21    2016-05-17 (PERLANCAR)
 
 	- coerce-with-sah: Support using JS coercer.
