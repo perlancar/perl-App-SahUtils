@@ -1,5 +1,11 @@
 Revision history for App-SahUtils
 
+0.23    2016-05-20 (PERLANCAR)
+
+	- coerce-with-sah: Add option --return-type (Data::Sah::Coerce
+	  0.007).
+
+
 0.22    2016-05-19 (PERLANCAR)
 
 	- Fix typo when passing --coerce-from to gen_coercer().
