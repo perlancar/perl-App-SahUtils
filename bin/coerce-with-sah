@@ -40,6 +40,11 @@ $SPEC{coerce_with_sah} = {
             schema => ['array*', of=>'str*'],
             tags => ['category:coercer-specification'],
         },
+        return_type => {
+            schema => ['str*', in=>[qw/val bool+val/]],
+            default => 'val',
+            tags => ['category:coercer-specification'],
+        },
 
         data_as_json => {
             summary => 'Data as JSON',
@@ -150,6 +155,7 @@ sub coerce_with_sah {
             my $c = $args{compiler};
             my %gen_args = (
                 type => $args{type},
+                return_type => $args{return_type},
                 (coerce_to => $args{coerce_to}) x !!defined($args{coerce_to}),
                 (coerce_from => $args{coerce_from}) x !!defined($args{coerce_from}),
                 (dont_coerce_from => $args{dont_coerce_from}) x !!defined($args{dont_coerce_from}),
