@@ -1,5 +1,11 @@
 Revision history for App-SahUtils
 
+0.24    2016-05-22 (PERLANCAR)
+
+	- Adjust to Data::Sah::Coerce 0.009 (return type 'bool+val'
+	  replaced with 'str+val').
+
+
 0.23    2016-05-20 (PERLANCAR)
 
 	- coerce-with-sah: Add option --return-type (Data::Sah::Coerce
