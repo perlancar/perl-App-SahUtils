@@ -41,7 +41,7 @@ $SPEC{coerce_with_sah} = {
             tags => ['category:coercer-specification'],
         },
         return_type => {
-            schema => ['str*', in=>[qw/val bool+val/]],
+            schema => ['str*', in=>[qw/val str+val/]],
             default => 'val',
             tags => ['category:coercer-specification'],
         },
