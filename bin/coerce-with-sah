@@ -138,19 +138,22 @@ _
             src_plang => 'bash',
         },
         {
-            src => q([[prog]] date --coerce-to DateTime --multiple-data-as-perl '["2016-05-15", "1463328281"]'),
+            src => q([[prog]] date --coerce-to 'float(epoch)' --multiple-data-as-perl '["2016-05-15", "1463328281"]'),
             src_plang => 'bash',
         },
         {
-            src => q([[prog]] duration --coerce-to 'float(secs)' --show-code),
+            summary => 'Show source code',
+            src => q([[prog]] duration --coerce-to 'float(secs)' -c),
             src_plang => 'bash',
         },
         {
-            src => q([[prog]] duration --coerce-to 'DateTime::Duration' --show-code --linenum),
+            summary => 'Show source code, with line number',
+            src => q([[prog]] duration --coerce-to 'DateTime::Duration' -c -l),
             src_plang => 'bash',
         },
         {
-            src => q([[prog]] date -C js --show-code),
+            summary => 'Show source code (JavaScript)',
+            src => q([[prog]] date -C js -c),
             src_plang => 'bash',
         },
     ],

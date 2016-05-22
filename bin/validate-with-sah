@@ -188,19 +188,19 @@ _
     },
     examples => [
         {
-            src => q([[prog]] 'int*' 42),
+            src => q([[prog]] '"int*"' 42),
             src_plang => 'bash',
             summary => 'Should succeed and return empty string',
         },
         {
-            src => q([[prog]] 'int*' '"x"'),
+            src => q([[prog]] '"int*"' '"x"'),
             src_plang => 'bash',
             summary => 'Should show an error message because "x" is not int',
         },
         {
             src => q([[prog]] '["int","min",1,"max",10]' --multiple-data-json '[-4,7,15]' --return-type bool),
             src_plang => 'bash',
-            summary => 'Validate multiple data, should return 0, 1, 0',
+            summary => 'Validate multiple data, should return "", 1, ""',
         },
         {
             src => q([[prog]] '["int","min",1,"max",10]' --multiple-data-json '[-4,7,15]' -d),
@@ -211,6 +211,11 @@ _
             src => q([[prog]] '["int","min",1,"max",10]' -c -l),
             src_plang => 'bash',
             summary => 'Show validator Perl code only, with line number',
+        },
+        {
+            src => q([[prog]] '["int","min",1,"max",10]' -c -C js),
+            src_plang => 'bash',
+            summary => 'Show validator JavaScript code',
         },
         {
             src => q([[prog]] '["int","min",1,"max",10]' -C js -c -l),
