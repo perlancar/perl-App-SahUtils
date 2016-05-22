@@ -134,11 +134,23 @@ _
     },
     examples => [
         {
-            src => q([[prog]] date --coerce-to DateTime --multiple-data-as-perl '("2016-05-15", "1463328281")'),
+            src => q([[prog]] date --coerce-to DateTime --data-as-perl '"2016-05-22"'),
             src_plang => 'bash',
         },
         {
-            src => q([[prog]] date --show-code),
+            src => q([[prog]] date --coerce-to DateTime --multiple-data-as-perl '["2016-05-15", "1463328281"]'),
+            src_plang => 'bash',
+        },
+        {
+            src => q([[prog]] duration --coerce-to 'float(secs)' --show-code),
+            src_plang => 'bash',
+        },
+        {
+            src => q([[prog]] duration --coerce-to 'DateTime::Duration' --show-code --linenum),
+            src_plang => 'bash',
+        },
+        {
+            src => q([[prog]] date -C js --show-code),
             src_plang => 'bash',
         },
     ],
