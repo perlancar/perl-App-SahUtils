@@ -1,5 +1,12 @@
 Revision history for App-SahUtils
 
+0.25    2016-05-22 (PERLANCAR)
+
+	- No functional changes.
+
+	- Fix/add examples.
+
+
 0.24    2016-05-22 (PERLANCAR)
 
 	- Adjust to Data::Sah::Coerce 0.009 (return type 'bool+val'
