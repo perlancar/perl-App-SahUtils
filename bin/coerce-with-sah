@@ -16,7 +16,7 @@ $SPEC{coerce_with_sah} = {
     summary => 'Coerce data',
     args_rels => {
         'choose_one&' => [
-            [qw/show_code/],
+            [qw/show_code show_rules/],
             [qw/data_as_json multiple_data_as_json
                 data_as_perl multiple_data_as_perl/],
         ],
@@ -71,6 +71,11 @@ $SPEC{coerce_with_sah} = {
             summary => "Don't coerce data, show generated coercer code only",
             schema=>['bool', is=>1],
             cmdline_aliases => {c=>{}},
+            tags => ['category:action-selection'],
+        },
+        show_rules => {
+            summary => "Don't coerce data, show coerce rules that will be used",
+            schema=>['bool', is=>1],
             tags => ['category:action-selection'],
         },
         data_with_result => {
@@ -161,13 +166,28 @@ _
 sub coerce_with_sah {
     my %args = @_;
 
+    my $c = $args{compiler};
+
     my $res;
   GET_RESULT:
     {
+        if ($args{show_rules}) {
+            require Data::Sah::CoerceCommon;
+            my $rules = Data::Sah::CoerceCommon::get_coerce_rules(
+                type => $args{type},
+                compiler => $c,
+                (coerce_to => $args{coerce_to}) x !!defined($args{coerce_to}),
+                (coerce_from => $args{coerce_from}) x !!defined($args{coerce_from}),
+                (dont_coerce_from => $args{dont_coerce_from}) x !!defined($args{dont_coerce_from}),
+                data_term => ($c eq 'perl' ? '$data' : 'data'),
+            );
+            $res = [200, "OK", $rules];
+            last GET_RESULT;
+        }
+
         my $gen_res;
         {
             no strict 'refs';
-            my $c = $args{compiler};
             my %gen_args = (
                 type => $args{type},
                 return_type => $args{return_type},
