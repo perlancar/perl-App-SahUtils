@@ -32,11 +32,8 @@ $SPEC{coerce_with_sah} = {
             schema => 'str*',
             tags => ['category:coercer-specification'],
         },
-        coerce_from => {
-            schema => ['array*', of=>'str*'],
-            tags => ['category:coercer-specification'],
-        },
-        dont_coerce_from => {
+        coerce_rules => {
+            'x.name.is_plural' => 1,
             schema => ['array*', of=>'str*'],
             tags => ['category:coercer-specification'],
         },
@@ -177,8 +174,7 @@ sub coerce_with_sah {
                 type => $args{type},
                 compiler => $c,
                 (coerce_to => $args{coerce_to}) x !!defined($args{coerce_to}),
-                (coerce_from => $args{coerce_from}) x !!defined($args{coerce_from}),
-                (dont_coerce_from => $args{dont_coerce_from}) x !!defined($args{dont_coerce_from}),
+                (coerce_rules => $args{coerce_rules}) x !!defined($args{coerce_rules}),
                 data_term => ($c eq 'perl' ? '$data' : 'data'),
             );
             $res = [200, "OK", $rules];
@@ -192,8 +188,7 @@ sub coerce_with_sah {
                 type => $args{type},
                 return_type => $args{return_type},
                 (coerce_to => $args{coerce_to}) x !!defined($args{coerce_to}),
-                (coerce_from => $args{coerce_from}) x !!defined($args{coerce_from}),
-                (dont_coerce_from => $args{dont_coerce_from}) x !!defined($args{dont_coerce_from}),
+                (coerce_rules => $args{coerce_rules}) x !!defined($args{coerce_rules}),
             );
             $gen_args{source} = 1 if $args{show_code};
             #$gen_opts{debug} = 1 if $args{with_debug};
