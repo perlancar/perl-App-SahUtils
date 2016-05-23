@@ -1,5 +1,10 @@
 Revision history for App-SahUtils
 
+0.26    2016-05-23 (PERLANCAR)
+
+	- coerce-with-sah: Add --show-rules option.
+
+
 0.25    2016-05-22 (PERLANCAR)
 
 	- No functional changes.
