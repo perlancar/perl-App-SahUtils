@@ -1,5 +1,11 @@
 Revision history for App-SahUtils
 
+0.27    2016-05-24 (PERLANCAR)
+
+	- Adjust to Data::Sah::Coerce 0.011 (coerce_from and
+	  dont_coerce_from replaced by coerce_rules).
+
+
 0.26    2016-05-23 (PERLANCAR)
 
 	- coerce-with-sah: Add --show-rules option.
