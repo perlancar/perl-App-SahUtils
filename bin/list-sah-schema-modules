@@ -1,0 +1,30 @@
+#!perl
+
+#use 5.010001;
+use strict;
+use warnings;
+
+use PERLANCAR::Module::List;
+
+my $res = PERLANCAR::Module::List::list_modules(
+    'Sah::Schema::', {list_modules=>1, recurse=>1});
+for (sort keys %$res) {
+    s/\ASah::Schema:://;
+    print "$_\n";
+}
+
+# ABSTRACT: List all installed Sah schema modules (Sah::Schema::*)
+
+=head1 SYNOPSIS
+
+ % list-sah-schema-modules
+
+
+=head1 DESCRIPTION
+
+This is a simple script to list all installed C<Sah::Schema::*> modules.
+
+
+=head1 SEE ALSO
+
+L<show-sah-schema-module>
