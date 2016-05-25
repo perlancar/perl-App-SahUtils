@@ -1,5 +1,8 @@
 #!perl
 
+# DATE
+# VERSION
+
 use 5.010001;
 use strict 'subs', 'vars';
 use warnings;
@@ -70,6 +73,7 @@ Perinci::CmdLine::Any->new(
 )->run;
 
 # ABSTRACT:
+# PODNAME:
 
 =head1 SEE ALSO
 

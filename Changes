@@ -1,5 +1,10 @@
 Revision history for App-SahUtils
 
+0.28    2016-05-25 (PERLANCAR)
+
+        - Add scripts: list-sah-schema-modules, show-sah-schema-module.
+
+
 0.27    2016-05-24 (PERLANCAR)
 
 	- Adjust to Data::Sah::Coerce 0.011 (coerce_from and
