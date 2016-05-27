@@ -40,6 +40,7 @@ $SPEC{coerce_with_sah} = {
         return_type => {
             schema => ['str*', in=>[qw/val str+val/]],
             default => 'val',
+            cmdline_aliases => {r=>{}},
             tags => ['category:coercer-specification'],
         },
 
