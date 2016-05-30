@@ -292,7 +292,7 @@ sub validate_with_sah {
                 }
             } elsif ($c eq 'js') {
                 if ($args{show_raw_compile}) {
-                    $obj = Data::Sah->new->get_compiler('perl');
+                    $obj = Data::Sah->new->get_compiler('js');
                 } else {
                     require Data::Sah::JS;
                     $func = \&{"Data::Sah::JS::gen_validator"};
