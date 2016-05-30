@@ -1,0 +1,32 @@
+#!perl
+
+# DATE
+# VERSION
+
+#use 5.010001;
+use strict;
+use warnings;
+
+use PERLANCAR::Module::List;
+
+my $res = PERLANCAR::Module::List::list_modules(
+    'Data::Sah::Type::', {list_modules=>1, recurse=>1});
+for (sort keys %$res) {
+    s/\AData::Sah::Type:://;
+    print "$_\n";
+}
+
+# ABSTRACT: List all installed Data::Sah type modules (Data::Sah::Type::*)
+# PODNAME:
+
+=head1 SYNOPSIS
+
+ % list-sah-type-modules
+
+
+=head1 DESCRIPTION
+
+This is a simple script to list all installed C<Data::Sah::Type::*> modules.
+
+
+=head1 SEE ALSO
