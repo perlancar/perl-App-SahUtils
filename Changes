@@ -1,5 +1,11 @@
 Revision history for App-SahUtils
 
+0.30    2016-05-30 (PERLANCAR)
+
+	- [Bugfix] validate-with-sah: setting --compiler/-C to js still set
+	  compiler to perl.
+
+
 0.29    2016-05-30 (PERLANCAR)
 
         - Add scripts: list-sah-type-modules, list-sah-coerce-rule-modules.
