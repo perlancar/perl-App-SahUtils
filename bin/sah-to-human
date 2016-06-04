@@ -87,6 +87,14 @@ _
 #            tags => ['category:validator-specification'],
 #        },
     },
+    examples => [
+        {
+            args => {schema=>"int"},
+        },
+        {
+            args => {schema=>["int" => min=>1, max=>10]},
+        },
+    ],
 };
 sub sah_to_human {
     my %args = @_;
