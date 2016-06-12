@@ -1,5 +1,12 @@
 Revision history for App-SahUtils
 
+0.31    2016-06-12 (PERLANCAR)
+
+	- Add utility: list-sah-clauses.
+
+	- sah-to-human: Add examples.
+
+
 0.30    2016-05-30 (PERLANCAR)
 
 	- [Bugfix] validate-with-sah: setting --compiler/-C to js still set
