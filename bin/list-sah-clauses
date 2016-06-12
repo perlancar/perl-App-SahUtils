@@ -56,7 +56,7 @@ my $res = gen_read_table_func(
         my ($query) = @_;
 
         my $type = $query->{args}{type};
-        my $mod = "Data::Sah::Compiler::perl::TH::$type";
+        my $mod = "Data::Sah::Type::$type";
         (my $mod_pm = "$mod.pm") =~ s!::!/!g;
 
         require $mod_pm;
