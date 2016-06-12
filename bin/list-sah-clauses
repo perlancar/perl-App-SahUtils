@@ -1,0 +1,103 @@
+#!perl
+
+# DATE
+# VERSION
+
+use 5.010001;
+use strict 'subs', 'vars';
+use warnings;
+
+use Perinci::CmdLine::Any;
+use Perinci::Sub::Gen::AccessTable qw(gen_read_table_func);
+
+our %SPEC;
+
+my $res = gen_read_table_func(
+    name => 'list_sah_clauses',
+    summary => 'List clauses of a Sah type',
+    table_spec => {
+        fields => {
+            name => {
+                schema => 'str*',
+                pos => 0,
+                sortable => 1,
+            },
+            canon_name => {
+                schema => 'str',
+                pos => 1,
+            },
+            prio => {
+                schema => 'int*',
+                pos => 2,
+                sortable => 1,
+            },
+            allow_expr => {
+                schema => 'bool',
+                pos => 3,
+            },
+            inspect_elem => {
+                schema => 'bool',
+                pos => 4,
+            },
+            subschema => {
+                schema => 'bool',
+                pos => 5,
+            },
+            tags => {
+                schema => 'str',
+                pos => 6,
+            },
+        },
+        pk => 'name',
+    },
+    table_data => sub {
+        require Package::MoreUtil;
+
+        my ($query) = @_;
+
+        my $type = $query->{args}{type};
+        my $mod = "Data::Sah::Compiler::perl::TH::$type";
+        (my $mod_pm = "$mod.pm") =~ s!::!/!g;
+
+        require $mod_pm;
+
+        my %content = Package::MoreUtil::list_package_contents($mod);
+
+        my @res;
+        for my $sub (sort keys %content) {
+            next unless $sub =~ /\Aclausemeta_(.+)\z/;
+            my $name = $1;
+            my $rec = {name => $name};
+            my $meta = $mod->$sub;
+            $rec->{prio}         = $meta->{prio};
+            $rec->{allow_expr}   = $meta->{allow_expr};
+            $rec->{inspect_elem} = $meta->{inspect_elem};
+            $rec->{subschema}    = $meta->{subschema} ? 1:0;
+            $rec->{canon_name}   = $meta->{names}[0] eq $name ? undef : $meta->{names}[0];
+            $rec->{tags}         = join(", ", @{ $meta->{tags} // [] });
+            push @res, $rec;
+        }
+
+        return {data=>\@res};
+    },
+);
+die "Can't generate function: $res->[0] - $res->[1]" unless $res->[0] == 200;
+
+$SPEC{list_sah_clauses}{args}{type} = {
+    schema => ['str*', match => qr/\A\w+(::\w+)*\z/], # XXX sah::type_name
+    req => 1,
+    pos => 0,
+};
+$SPEC{list_sah_clauses}{args}{query}{pos} = 1;
+
+Perinci::CmdLine::Any->new(
+    url => '/main/list_sah_clauses',
+)->run;
+
+# ABSTRACT:
+# PODNAME:
+
+=head1 SYNOPSIS
+
+ % list-sah-clauses
+ % list-sah-clauses -l
