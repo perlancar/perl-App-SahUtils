@@ -87,6 +87,7 @@ $SPEC{list_sah_clauses}{args}{type} = {
     schema => ['str*', match => qr/\A\w+(::\w+)*\z/], # XXX sah::type_name
     req => 1,
     pos => 0,
+    'x.schema.entity' => 'sah::type_name',
 };
 $SPEC{list_sah_clauses}{args}{query}{pos} = 1;
 
