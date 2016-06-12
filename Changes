@@ -1,5 +1,12 @@
 Revision history for App-SahUtils
 
+0.33    2016-06-12 (PERLANCAR)
+
+	- [Bugfix] list-sah-clauses: Don't use
+	  Data::Sah::Compiler::perl::TH::<type>, load
+	  Data::Sah::Type::<type> directly.
+
+
 0.32    2016-06-12 (PERLANCAR)
 
 	- list-sah-clauses: Add completion for 'type'.
