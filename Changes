@@ -1,5 +1,12 @@
 Revision history for App-SahUtils
 
+0.34    2016-06-16 (PERLANCAR)
+
+	- Add completion for --coerce-rule, --type, & --format.
+
+	- Add utility: format-with-sah.
+
+
 0.33    2016-06-12 (PERLANCAR)
 
 	- [Bugfix] list-sah-clauses: Don't use
