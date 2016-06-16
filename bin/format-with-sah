@@ -11,37 +11,28 @@ use Perinci::CmdLine::Any;
 
 our %SPEC;
 
-$SPEC{coerce_with_sah} = {
+$SPEC{format_with_sah} = {
     v => 1.1,
-    summary => 'Coerce data',
+    summary => 'Format data',
     args_rels => {
         'choose_one&' => [
-            [qw/show_code show_rules/],
+            [qw/show_code/],
             [qw/data_as_json multiple_data_as_json
                 data_as_perl multiple_data_as_perl/],
         ],
     },
     args => {
-        type => {
+        format => {
             schema => 'str*',
             req => 1,
             pos => 0,
-            tags => ['category:coercer-specification'],
+            tags => ['category:formatter-specification'],
+            completion => sub {
+            },
         },
-        coerce_to => {
-            schema => 'str*',
-            tags => ['category:coercer-specification'],
-        },
-        coerce_rules => {
-            'x.name.is_plural' => 1,
-            schema => ['array*', of=>'str*'],
-            tags => ['category:coercer-specification'],
-        },
-        return_type => {
-            schema => ['str*', in=>[qw/val str+val/]],
-            default => 'val',
-            cmdline_aliases => {r=>{}},
-            tags => ['category:coercer-specification'],
+        formatter_args => {
+            schema => ['hash*'],
+            tags => ['category:formatter-specification'],
         },
 
         data_as_json => {
@@ -66,59 +57,44 @@ $SPEC{coerce_with_sah} = {
         },
 
         show_code => {
-            summary => "Don't coerce data, show generated coercer code only",
+            summary => "Don't format data, show generated formatter code only",
             schema=>['bool', is=>1],
             cmdline_aliases => {c=>{}},
             tags => ['category:action-selection'],
         },
-        show_rules => {
-            summary => "Don't coerce data, show coerce rules that will be used",
-            schema=>['bool', is=>1],
-            tags => ['category:action-selection'],
-        },
         data_with_result => {
-            summary => "Show data alongside with coerced result",
+            summary => "Show data alongside with formatted result",
             description => <<'_',
 
-The default is to show the coerced result only.
+The default is to show the formatted result only.
 
 _
             schema=>['bool', is=>1],
             cmdline_aliases => {d=>{}},
             tags => ['category:output'],
         },
-#        with_debug => {
-#            summary => 'Generate coercer with debug on',
-#            description => <<'_',
-#
-#This means e.g. to pepper the coercer code with logging statements.
-#
-#_
-#            schema => ['bool', is=>1],
-#            tags => ['category:coercer-specification'],
-#        },
 #        pp => {
-#            summary => 'Generate coercer code that avoids the use of XS modules',
+#            summary => 'Generate Perl formatter code that avoids the use of XS modules',
 #            schema => ['bool', is=>1],
-#            tags => ['category:coercer-specification'],
+#            tags => ['category:formatter-specification'],
 #            # XXX only relevant when compiler=perl
 #        },
 #        core => {
-#            summary => 'Generate Perl coercer code that avoids the use of non-core modules',
+#            summary => 'Generate Perl formatter that avoids the use of non-core modules',
 #            schema => ['bool', is=>1],
-#            tags => ['category:coercer-specification'],
+#            tags => ['category:formatter-specification'],
 #            # XXX only relevant when compiler=perl
 #        },
 #        core_or_pp => {
-#            summary => 'Generate Perl coercer code that only uses core or pure-perl modules',
+#            summary => 'Generate Perl formatter that only uses core or pure-perl modules',
 #            schema => ['bool', is=>1],
-#            tags => ['category:coercer-specification'],
+#            tags => ['category:formatter-specification'],
 #            # XXX only relevant when compiler=perl
 #        },
 #        no_modules => {
-#            summary => 'Generate Perl coercer code that does not use modules',
+#            summary => 'Generate Perl formatter that does not use modules',
 #            schema => ['bool', is=>1],
-#            tags => ['category:coercer-specification'],
+#            tags => ['category:formatter-specification'],
 #            # XXX only relevant when compiler=perl
 #        },
         compiler => {
@@ -126,7 +102,7 @@ _
             schema=>['str*', in=>[qw/perl js/]],
             default => 'perl',
             cmdline_aliases => {C=>{}},
-            tags => ['category:coercer-specification'],
+            tags => ['category:formatter-specification'],
         },
         linenum => {
             summary => 'When showing source code, add line numbers',
@@ -137,31 +113,12 @@ _
     },
     examples => [
         {
-            src => q([[prog]] date --coerce-to DateTime --data-as-perl '"2016-05-22"'),
-            src_plang => 'bash',
-        },
-        {
-            src => q([[prog]] date --coerce-to 'float(epoch)' --multiple-data-as-perl '["2016-05-15", "1463328281"]'),
-            src_plang => 'bash',
-        },
-        {
-            summary => 'Show source code',
-            src => q([[prog]] duration --coerce-to 'float(secs)' -c),
-            src_plang => 'bash',
-        },
-        {
-            summary => 'Show source code, with line number',
-            src => q([[prog]] duration --coerce-to 'DateTime::Duration' -c -l),
-            src_plang => 'bash',
-        },
-        {
-            summary => 'Show source code (JavaScript)',
-            src => q([[prog]] date -C js -c),
+            src => q([[prog]] iso8601_date --data-as-perl '1466055012'),
             src_plang => 'bash',
         },
     ],
 };
-sub coerce_with_sah {
+sub format_with_sah {
     my %args = @_;
 
     my $c = $args{compiler};
@@ -169,27 +126,12 @@ sub coerce_with_sah {
     my $res;
   GET_RESULT:
     {
-        if ($args{show_rules}) {
-            require Data::Sah::CoerceCommon;
-            my $rules = Data::Sah::CoerceCommon::get_coerce_rules(
-                type => $args{type},
-                compiler => $c,
-                (coerce_to => $args{coerce_to}) x !!defined($args{coerce_to}),
-                (coerce_rules => $args{coerce_rules}) x !!defined($args{coerce_rules}),
-                data_term => ($c eq 'perl' ? '$data' : 'data'),
-            );
-            $res = [200, "OK", $rules];
-            last GET_RESULT;
-        }
-
         my $gen_res;
         {
             no strict 'refs';
             my %gen_args = (
-                type => $args{type},
-                return_type => $args{return_type},
-                (coerce_to => $args{coerce_to}) x !!defined($args{coerce_to}),
-                (coerce_rules => $args{coerce_rules}) x !!defined($args{coerce_rules}),
+                format => $args{format},
+                (formatter_args => $args{formatter_args}) x !!$args{formatter_args},
             );
             $gen_args{source} = 1 if $args{show_code};
             #$gen_opts{debug} = 1 if $args{with_debug};
@@ -198,11 +140,11 @@ sub coerce_with_sah {
             #$gen_opts{core_or_pp} = 1 if $args{core_or_pp};
             #$gen_opts{no_modules} = 1 if $args{no_modules};
             if ($c eq 'perl') {
-                require Data::Sah::Coerce;
-                $gen_res = Data::Sah::Coerce::gen_coercer(%gen_args);
+                require Data::Sah::Format;
+                $gen_res = Data::Sah::Format::gen_formatter(%gen_args);
             } elsif ($c eq 'js') {
-                require Data::Sah::CoerceJS;
-                $gen_res = Data::Sah::CoerceJS::gen_coercer(%gen_args);
+                require Data::Sah::FormatJS;
+                $gen_res = Data::Sah::FormatJS::gen_formatter(%gen_args);
             } else {
                 $res = [400, "Unknown compiler '$c', please specify perl/js"];
                 last GET_RESULT;
@@ -273,7 +215,7 @@ sub coerce_with_sah {
 }
 
 my $cli = Perinci::CmdLine::Any->new(
-    url => '/main/coerce_with_sah',
+    url => '/main/format_with_sah',
     pass_cmdline_object => 1,
 );
 $cli->{common_opts}{naked_res}{default} = 1;
@@ -284,7 +226,7 @@ $cli->run;
 
 =head1 FAQ
 
-=head2 When there is an error (e.g. in generating coercer code, in coercing) the program returns undef/null, how do I see the error message?
+=head2 When there is an error (e.g. in generating formatter code, in formatting) the program returns undef/null, how do I see the error message?
 
 Pass `--no-naked-res` to see the error code and error message. The default is
 naked for simpler output.
