@@ -27,6 +27,7 @@ $SPEC{coerce_with_sah} = {
             req => 1,
             pos => 0,
             tags => ['category:coercer-specification'],
+            'x.schema.entity' => 'sah::type_name',
         },
         coerce_to => {
             schema => 'str*',
@@ -36,6 +37,22 @@ $SPEC{coerce_with_sah} = {
             'x.name.is_plural' => 1,
             schema => ['array*', of=>'str*'],
             tags => ['category:coercer-specification'],
+            element_completion => sub {
+                my %args = @_;
+                my $cmdline = $args{cmdline} or return undef;
+                my $r = $args{r};
+
+                $r->{read_config} = 1;
+                my $res = $cmdline->parse_argv($r);
+                my $type = $res->[2]{type} or return undef;
+                my $compiler = $res->[2]{compiler} // 'perl';
+
+                require Complete::Module;
+                Complete::Module::complete_module(
+                    word => $args{word},
+                    ns_prefix => "Data::Sah::Coerce::$compiler::$type",
+                );
+            },
         },
         return_type => {
             schema => ['str*', in=>[qw/val str+val/]],

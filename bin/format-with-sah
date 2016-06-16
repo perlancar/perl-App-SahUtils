@@ -28,6 +28,19 @@ $SPEC{format_with_sah} = {
             pos => 0,
             tags => ['category:formatter-specification'],
             completion => sub {
+                my %args = @_;
+                my $cmdline = $args{cmdline} or return undef;
+                my $r = $args{r};
+
+                $r->{read_config} = 1;
+                my $res = $cmdline->parse_argv($r);
+                my $compiler = $res->[2]{compiler} // 'perl';
+
+                require Complete::Module;
+                Complete::Module::complete_module(
+                    word => $args{word},
+                    ns_prefix => "Data::Sah::Format::$compiler",
+                );
             },
         },
         formatter_args => {
