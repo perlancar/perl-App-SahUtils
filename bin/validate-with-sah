@@ -119,7 +119,29 @@ _
         return_type => {
             schema=>['str*', in=>[qw/bool bool+val str str+val full/]],
             default=>'str',
-            cmdline_aliases => {r=>{}},
+            cmdline_aliases => {
+                r => {},
+                bool => {
+                    is_flag => 1,
+                    summary => 'Shortcut for --return-type bool',
+                    code => sub { $_[0]{return_type} = 'bool' },
+                },
+                bool_val => {
+                    is_flag => 1,
+                    summary => 'Shortcut for --return-type bool+val',
+                    code => sub { $_[0]{return_type} = 'bool+val' },
+                },
+                str_val => {
+                    is_flag => 1,
+                    summary => 'Shortcut for --return-type str+val',
+                    code => sub { $_[0]{return_type} = 'str+val' },
+                },
+                full => {
+                    is_flag => 1,
+                    summary => 'Shortcut for --return-type full',
+                    code => sub { $_[0]{return_type} = 'full' },
+                },
+            },
             tags => ['category:validator-specification'],
         },
         show_schema => {
