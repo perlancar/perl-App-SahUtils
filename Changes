@@ -1,5 +1,11 @@
 Revision history for App-SahUtils
 
+0.35    2016-07-01 (PERLANCAR)
+
+	- validate-with-sah: Add option --schema-module (-m) to use schema
+	  from a Sah::Schema::* module.
+
+
 0.34    2016-06-16 (PERLANCAR)
 
 	- Add completion for --coerce-rule, --type, & --format.
