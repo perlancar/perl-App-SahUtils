@@ -29,7 +29,7 @@ _
             [qw/data multiple_data data_file multiple_data_file/],
         ],
         'req_one&' => [
-            [qw/schema schema_file/],
+            [qw/schema schema_file schema_module/],
         ],
         # XXX: data multiple_data data_file multiple_data_file only required if there are now show_* arguments
         # doesn't work yet?
@@ -63,6 +63,18 @@ _
             summary => 'Give hint for schema file type',
             cmdline_aliases => {t=>{}},
             tags => ['category:schema-specification'],
+        },
+        schema_module => {
+            schema => ['str*', match => qr/\A\w+(\::\w+)*\z/],
+            cmdline_aliases => {m=>{}},
+            tags => ['category:schema-specification'],
+            completion => sub {
+                require Complete::Module;
+                my %args = @_;
+                Complete::Module::complete_module(
+                    word => $args{word}, ns_prefix => 'Sah::Schema',
+                );
+            },
         },
 
         data => {
@@ -267,8 +279,15 @@ sub validate_with_sah {
                 $res = [400, "Unknown schema file type '$type', please specify json/yaml"];
                 last GET_RESULT;
             }
+        } elsif (defined $args{schema_module}) {
+            no strict 'refs';
+            my $mod = "Sah::Schema::$args{schema_module}";
+            (my $mod_pm = "$mod.pm") =~ s!::!/!g;
+            require $mod_pm;
+            $schema = ${"$mod\::schema"}
+                or return [400, "No schema found in module '$mod'"];
         } else {
-            $res = [400, "Please specify 'schema' or 'schema_file'"];
+            $res = [400, "Please specify 'schema' or 'schema_file' or 'schema_module'"];
             last GET_RESULT;
         }
 
