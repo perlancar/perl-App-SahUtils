@@ -1,5 +1,13 @@
 Revision history for App-SahUtils
 
+0.36    2016-07-19 (PERLANCAR)
+
+	- Add utility: resolve-sah-schema.
+
+	- [ux] validate-with-sah: Add shortcut options --bool, --bool-val,
+	  --str-val, --full.
+
+
 0.35    2016-07-01 (PERLANCAR)
 
 	- validate-with-sah: Add option --schema-module (-m) to use schema
