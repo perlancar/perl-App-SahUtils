@@ -1,0 +1,39 @@
+#!perl
+
+# DATE
+# VERSION
+
+use Data::Dump::Color;
+
+@ARGV == 1 or die "Usage: $0 <sah-schema-in-perl-code>\n";
+eval "\$sch = $ARGV[0]";
+die if $@;
+
+require Data::Sah::Resolve;
+my $nsch = Data::Sah::Resolve::resolve_schema($sch);
+dd $nsch;
+
+# ABSTRACT: Resolve Sah schema
+# PODNAME:
+
+=head1 SYNOPSIS
+
+ % resolve-sah-schema '"int"'
+ ["int", []]
+
+ % resolve-sah-schema '["posint", div_by=>2]'
+ ["int", {min=>1}, {div_by=>2}]
+
+ % resolve-sah-schema '["posint", "merge.delete.min"=>undef, div_by=>2]'
+ ["int", {div_by=>2}]
+
+
+=head1 DESCRIPTION
+
+This script can be used to quickly produce/see the resolved form of a L<Sah>
+schema. Both input and output are in the form of Perl code.
+
+
+=head1 SEE ALSO
+
+L<Data::Sah::Resolve>
