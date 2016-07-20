@@ -1,5 +1,11 @@
 Revision history for App-SahUtils
 
+0.37    2016-07-20 (PERLANCAR)
+
+	- resolve-sah-schema: Add --return-intermediates &
+	  --merge-clause-sets options.
+
+
 0.36    2016-07-19 (PERLANCAR)
 
 	- Add utility: resolve-sah-schema.
