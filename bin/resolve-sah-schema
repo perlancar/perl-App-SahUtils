@@ -3,23 +3,68 @@
 # DATE
 # VERSION
 
-use Data::Dump::Color;
+use 5.010001;
+use strict;
+use warnings;
 
-@ARGV == 1 or die "Usage: $0 <sah-schema-in-perl-code>\n";
-eval "\$sch = $ARGV[0]";
-die if $@;
+use Perinci::CmdLine::Any;
 
-require Data::Sah::Resolve;
-my $nsch = Data::Sah::Resolve::resolve_schema($sch);
-dd $nsch;
+our %SPEC;
 
-# ABSTRACT: Resolve Sah schema
+$SPEC{resolve_sah_schema} = {
+    v => 1.1,
+    summary => 'Resolve Sah schema',
+    args => {
+        schema => {
+            schema => 'str*', # XXX perl::data
+            req => 1,
+            pos => 0,
+        },
+        return_intermediates => {
+            schema => 'bool',
+        },
+        merge_clause_sets => {
+            schema => 'bool',
+            default => 1,
+        },
+    },
+};
+sub resolve_sah_schema {
+    require Data::Dump::Color;
+    require Data::Sah::Resolve;
+
+    my %args = @_;
+
+    my $sch;
+    eval "\$sch = $args{schema}";
+    die if $@;
+
+    my $nsch = Data::Sah::Resolve::resolve_schema(
+        {
+            return_intermediates => $args{return_intermediates},
+            merge_clause_sets    => $args{merge_clause_sets},
+        },
+        $sch);
+
+    [200, "OK", Data::Dump::Color::dump($nsch), {
+        'cmdline.skip_format' => 1,
+    }];
+}
+
+Perinci::CmdLine::Any->new(
+    url => '/main/resolve_sah_schema',
+)->run;
+
+# ABSTRACT:
 # PODNAME:
 
 =head1 SYNOPSIS
 
  % resolve-sah-schema '"int"'
  ["int", []]
+
+ % resolve-sah-schema '"posint"' ; # will look Sah::Schema::posint up
+ ["int", {min=>1}]
 
  % resolve-sah-schema '["posint", div_by=>2]'
  ["int", {min=>1}, {div_by=>2}]
