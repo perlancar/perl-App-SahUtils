@@ -36,8 +36,12 @@ sub resolve_sah_schema {
     my %args = @_;
 
     my $sch;
-    eval "\$sch = $args{schema}";
-    die if $@;
+    if ($args{schema} =~ /\A\w+(::\w+)*\*?\z/) {
+        $sch = $args{schema};
+    } else {
+        eval "\$sch = $args{schema}";
+        die if $@;
+    }
 
     my $nsch = Data::Sah::Resolve::resolve_schema(
         {
