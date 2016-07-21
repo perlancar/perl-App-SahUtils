@@ -1,5 +1,11 @@
 Revision history for App-SahUtils
 
+0.38    2016-07-21 (PERLANCAR)
+
+	- [ux] normalize-sah-schema, resolve-sah-schema: Allow unquoted
+	  schema names.
+
+
 0.37    2016-07-20 (PERLANCAR)
 
 	- resolve-sah-schema: Add --return-intermediates &
