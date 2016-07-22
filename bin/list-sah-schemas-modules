@@ -10,27 +10,25 @@ use warnings;
 use PERLANCAR::Module::List;
 
 my $res = PERLANCAR::Module::List::list_modules(
-    'Sah::Schema::', {list_modules=>1, recurse=>1});
+    'Sah::Schemas::', {list_modules=>1, recurse=>1});
 for (sort keys %$res) {
     s/\ASah::Schema:://;
     print "$_\n";
 }
 
-# ABSTRACT: List all installed Sah schema modules (Sah::Schema::*)
+# ABSTRACT: List all installed Sah::Schemas::* modules
 # PODNAME:
 
 =head1 SYNOPSIS
 
- % list-sah-schema-modules
+ % list-sah-schemas-modules
 
 
 =head1 DESCRIPTION
 
-This is a simple script to list all installed C<Sah::Schema::*> modules.
+This is a simple script to list all installed C<Sah::Schemas::*> modules.
 
 
 =head1 SEE ALSO
 
-L<show-sah-schema-module>
-
-L<list-sah-schemas-modules>
+L<list-sah-schema-modules>
