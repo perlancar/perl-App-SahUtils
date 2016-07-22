@@ -1,5 +1,10 @@
 Revision history for App-SahUtils
 
+0.39    2016-07-22 (PERLANCAR)
+
+	- Add utility: list-sah-schemas-modules.
+
+
 0.38    2016-07-21 (PERLANCAR)
 
 	- [ux] normalize-sah-schema, resolve-sah-schema: Allow unquoted
