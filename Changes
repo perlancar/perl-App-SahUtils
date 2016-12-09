@@ -1,5 +1,11 @@
 Revision history for App-SahUtils
 
+0.41    2016-12-09 (PERLANCAR)
+
+	- Add utilities: get-sah-type,
+	  is-sah{,-simple,-collection,-ref,-numeric}{,-builtin}-ytpe.
+
+
 0.40    2016-12-09 (PERLANCAR)
 
 	- resolve-sah-schema: Add missing newline in output.
