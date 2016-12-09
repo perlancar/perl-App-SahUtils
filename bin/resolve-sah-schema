@@ -50,7 +50,7 @@ sub resolve_sah_schema {
         },
         $sch);
 
-    [200, "OK", Data::Dump::Color::dump($nsch), {
+    [200, "OK", Data::Dump::Color::dump($nsch) . "\n", {
         'cmdline.skip_format' => 1,
     }];
 }
