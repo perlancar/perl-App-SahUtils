@@ -7,28 +7,57 @@
 use strict;
 use warnings;
 
+use Perinci::CmdLine::Any;
+use Perinci::Sub::Gen::AccessTable qw(gen_read_table_func);
 use PERLANCAR::Module::List;
 
-my $res = PERLANCAR::Module::List::list_modules(
-    'Data::Sah::Coerce::', {list_modules=>1, recurse=>1});
-for (sort keys %$res) {
-    s/\AData::Sah::Coerce::(?=[a-z])//;
-    print "$_\n";
-}
+my $res = gen_read_table_func(
+    name => 'app',
+    summary => 'List Sah coerce rule modules',
+    table_data => sub {
+        my $mods = PERLANCAR::Module::List::list_modules(
+            'Data::Sah::Coerce::', {list_modules=>1, recurse=>1});
 
-# ABSTRACT: List all installed Data::Sah coercion rule modules (Data::Sah::Coerce::<lang>::*)
+        my @rows;
+        for my $mod (sort keys %$mods) {
+            $mod =~ /\AData::Sah::Coerce::(?=[a-z])(.+)/ or next;
+            my $row = {rule=>$1};
+            (my $mod_pm = "$mod.pm") =~ s!::!/!g;
+            require $mod_pm;
+            my $meta = $mod->meta;
+            $row->{prio} = $meta->{prio};
+            $row->{enable_by_default} = $meta->{enable_by_default};
+            push @rows, $row;
+        }
+        return {data=>\@rows};
+    },
+    table_spec => {
+        fields => {
+            rule => {
+                schema => 'str*',
+                pos => 0,
+                sortable => 1,
+            },
+            prio => {
+                schema => 'int*',
+                pos => 1,
+                sortable => 1,
+            },
+            enable_by_default => {
+                schema => 'bool*',
+                pos => 2,
+                sortable => 1,
+            },
+        },
+        pk => 'rule',
+    },
+);
+die "Can't generate function: $res->[0] - $res->[1]" unless $res->[0] == 200;
+
+Perinci::CmdLine::Any->new(url => '/main/app')->run;
+
+# ABSTRACT:
 # PODNAME:
-
-=head1 SYNOPSIS
-
- % list-sah-coerce-rule-modules
-
-
-=head1 DESCRIPTION
-
-This is a simple script to list all installed C<< Data::Sah::Coerce::<lang>::*
->> modules.
-
 
 =head1 SEE ALSO
 
