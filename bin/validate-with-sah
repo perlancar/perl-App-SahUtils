@@ -260,11 +260,15 @@ _
             src => q{[[prog]] -f schema1.json '["data"]'},
             src_plang => 'bash',
             summary => 'Load schema from file',
+            test => 0,
+            'x.doc.show_result' => 0,
         },
         {
             src => q{[[prog]] -f schema1.json --multiple-data-file datafile --data-file-type json},
             src_plang => 'bash',
             summary => 'Load schema and data from file',
+            test => 0,
+            'x.doc.show_result' => 0,
         },
     ],
 };

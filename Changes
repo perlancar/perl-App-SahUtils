@@ -1,3 +1,9 @@
+0.42    2017-03-09 (PERLANCAR)
+
+	- list-sah-coerce-rule-modules: Add detail result & more filtering
+	  options by using Perinci::Sub::Gen::AccessTable.
+
+
 0.41    2016-12-09 (PERLANCAR)
 
 	- Add utilities: get-sah-type,
