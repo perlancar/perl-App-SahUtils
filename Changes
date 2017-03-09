@@ -1,3 +1,8 @@
+0.43    2017-03-09 (PERLANCAR)
+
+        - Add utility: show-sah-coerce-module.
+
+
 0.42    2017-03-09 (PERLANCAR)
 
 	- list-sah-coerce-rule-modules: Add detail result & more filtering
