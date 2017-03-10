@@ -61,4 +61,4 @@ Perinci::CmdLine::Any->new(url => '/main/app')->run;
 
 =head1 SEE ALSO
 
-L<Data::Sah::Coerce>
+<show-sah-coerce-module>
