@@ -1,3 +1,9 @@
+0.44    2017-03-10 (PERLANCAR)
+
+	- list-sah-schema-modules: Add detail result & more filtering
+	  options by using Perinci::Sub::Gen::AccessTable.
+
+
 0.43    2017-03-09 (PERLANCAR)
 
         - Add utility: show-sah-coerce-module.
