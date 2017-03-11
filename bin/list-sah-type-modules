@@ -7,26 +7,60 @@
 use strict;
 use warnings;
 
-use PERLANCAR::Module::List;
+use Perinci::CmdLine::Any;
+use Perinci::Sub::Gen::AccessTable qw(gen_read_table_func);
 
-my $res = PERLANCAR::Module::List::list_modules(
-    'Data::Sah::Type::', {list_modules=>1, recurse=>1});
-for (sort keys %$res) {
-    s/\AData::Sah::Type:://;
-    print "$_\n";
-}
+our %SPEC;
 
-# ABSTRACT: List all installed Data::Sah type modules (Data::Sah::Type::*)
+# XXX add option: include base classes or not
+
+my $res = gen_read_table_func(
+    name => 'app',
+    summary => 'List Sah type modules (Data::Sah::Type::*)',
+    table_spec => {
+        fields => {
+            name => {
+                schema => 'str*',
+                pos => 0,
+                sortable => 1,
+            },
+            #base => {
+            #    schema => 'str*',
+            #    pos => 1,
+            #    sortable => 1,
+            #},
+        },
+        pk => 'name',
+    },
+    table_data => sub {
+        no strict 'refs';
+        require PERLANCAR::Module::List;
+
+        my $mods = PERLANCAR::Module::List::list_modules(
+            'Data::Sah::Type::', {list_modules=>1, recurse=>1});
+        my @rows;
+        for my $mod (sort keys %$mods) {
+            (my $name = $mod) =~ s/\AData::Sah::Type:://;
+            (my $mod_pm = "$mod.pm") =~ s!::!/!g;
+            require $mod_pm;
+
+            # type modules uses roles instead of inheritance
+            #my @isa = @{"$mod\::ISA"};
+            #for (@isa) { s/^Data::Sah::Type::// }
+
+            push @rows, {
+                name => $name,
+                #base => join(", ", @isa),
+            };
+        }
+        {data => \@rows};
+    },
+);
+die "Can't generate function: $res->[0] - $res->[1]" unless $res->[0] == 200;
+
+Perinci::CmdLine::Any->new(
+    url => '/main/app',
+)->run;
+
+# ABSTRACT:
 # PODNAME:
-
-=head1 SYNOPSIS
-
- % list-sah-type-modules
-
-
-=head1 DESCRIPTION
-
-This is a simple script to list all installed C<Data::Sah::Type::*> modules.
-
-
-=head1 SEE ALSO
