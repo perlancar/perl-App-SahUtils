@@ -33,3 +33,9 @@ dd $nsch;
 
 This script can be used to quickly produce/see the normalized form of a L<Sah>
 schema. Both input and output are in the form of Perl code.
+
+
+=head1 SEE ALSO
+
+L<validate-with-sah> can also show normalized schema using the C<--show-schema>
+option.

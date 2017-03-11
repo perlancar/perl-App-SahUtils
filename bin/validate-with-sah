@@ -464,3 +464,8 @@ $cli->run;
 
 Pass `--no-naked-res` to see the error code and error message. The default is
 naked for simpler output.
+
+
+=head1 SEE ALSO
+
+To normalize a schema, you can also use L<normalize-sah-schema>.
