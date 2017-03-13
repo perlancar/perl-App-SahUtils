@@ -1,3 +1,11 @@
+0.45    2017-03-11 (PERLANCAR)
+
+	- list-sah-schemas-modules, list-sah-type-modules: Allow filtering etc
+	  by using Perinci::Sub::Gen::AccessTable.
+
+	- [doc] Add some cross references.
+
+
 0.44    2017-03-10 (PERLANCAR)
 
 	- list-sah-schema-modules: Add detail result & more filtering
