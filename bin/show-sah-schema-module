@@ -15,7 +15,7 @@ $SPEC{app} = {
     summary => 'Show schema from Sah::Schema module',
     args => {
         name => {
-            schema => ['str*', match=>'\A\w+(::\w+)*\z'], # perl::mod
+            schema => ['perl::modname*'],
             pos => 0,
             completion => sub {
                 my %args = @_;
