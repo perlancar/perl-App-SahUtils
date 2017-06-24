@@ -50,8 +50,8 @@ _
             summary => 'Retrieve schema from file',
             description => <<'_',
 
-JSON and YAML formats are supported. File type will be guessed from filename,
-defaults to JSON.
+JSON, YAML, and Perl formats are supported. File type will be guessed from
+filename, defaults to JSON.
 
 _
             cmdline_aliases => {f=>{}},
@@ -59,7 +59,7 @@ _
             tags => ['category:schema-specification'],
         },
         schema_file_type => {
-            schema=>['str*', in=>[qw/json yaml/]],
+            schema=>['str*', in=>[qw/json yaml perl/]],
             summary => 'Give hint for schema file type',
             cmdline_aliases => {t=>{}},
             tags => ['category:schema-specification'],
@@ -92,8 +92,8 @@ _
             summary => 'Retrieve data from file',
             description => <<'_',
 
-JSON and YAML formats are supported. File type will be guessed from filename,
-defaults to JSON.
+JSON, YAML, and Perl formats are supported. File type will be guessed from
+filename, defaults to JSON.
 
 _
             'x.schema.entity' => 'filename',
@@ -111,7 +111,7 @@ _
             tags => ['category:data-specification'],
         },
         data_file_type => {
-            schema=>['str*', in=>[qw/json yaml/]],
+            schema=>['str*', in=>[qw/json yaml perl/]],
             summary => 'Give hint for data file type',
             tags => ['category:data-specification'],
         },
@@ -291,6 +291,7 @@ sub validate_with_sah {
             if (!$type) {
                 if ($path =~ /\b(json)$/i) { $type = 'json' }
                 elsif ($path =~ /\b(yaml|yml)$/i) { $type = 'yaml' }
+                elsif ($path =~ /\b(perl|pl)$/i) { $type = 'perl' }
                 else { $type = 'json' }
             }
             if ($type eq 'json') {
@@ -301,6 +302,11 @@ sub validate_with_sah {
             } elsif ($type eq 'yaml') {
                 require YAML::XS;
                 $schema = YAML::XS::LoadFile($path);
+            } elsif ($type eq 'perl') {
+                require File::Slurper;
+                my $ct = File::Slurper::read_text($path);
+                $schema = eval $ct;
+                die if $@;
             } else {
                 $res = [400, "Unknown schema file type '$type', please specify json/yaml"];
                 last GET_RESULT;
@@ -397,6 +403,7 @@ sub validate_with_sah {
             if (!$type) {
                 if ($path =~ /\b(json)$/i) { $type = 'json' }
                 elsif ($path =~ /\b(yaml|yml)$/i) { $type = 'yaml' }
+                elsif ($path =~ /\b(perl|pl)$/i) { $type = 'perl' }
                 else { $type = 'json' }
             }
             if ($type eq 'json') {
@@ -407,6 +414,11 @@ sub validate_with_sah {
             } elsif ($type eq 'yaml') {
                 require YAML::XS;
                 $data = YAML::XS::LoadFile($path);
+            } elsif ($type eq 'perl') {
+                require File::Slurper;
+                my $ct = File::Slurper::read_text($path);
+                $data = eval $ct;
+                die if $@;
             } else {
                 $res = [400, "Unknown data file type '$type', please specify json/yaml"];
                 last GET_RESULT;
