@@ -61,10 +61,8 @@ my $res = gen_read_table_func(
 
         require $mod_pm;
 
-        my $content = Package::Stash->new($mod)->get_all_symbols("CODE");
-
         my @res;
-        for my $sub (sort keys %$content) {
+        for my $sub (Package::Stash->new($mod)->list_all_symbols("CODE")) {
             next unless $sub =~ /\Aclausemeta_(.+)\z/;
             my $name = $1;
             my $rec = {name => $name};
