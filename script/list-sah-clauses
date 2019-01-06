@@ -51,7 +51,7 @@ my $res = gen_read_table_func(
         pk => 'name',
     },
     table_data => sub {
-        require Package::MoreUtil;
+        require Package::Stash;
 
         my ($query) = @_;
 
@@ -61,10 +61,10 @@ my $res = gen_read_table_func(
 
         require $mod_pm;
 
-        my %content = Package::MoreUtil::list_package_contents($mod);
+        my $content = Package::Stash->new($mod)->get_all_symbols("CODE");
 
         my @res;
-        for my $sub (sort keys %content) {
+        for my $sub (sort keys %$content) {
             next unless $sub =~ /\Aclausemeta_(.+)\z/;
             my $name = $1;
             my $rec = {name => $name};
