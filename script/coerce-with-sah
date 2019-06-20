@@ -158,7 +158,13 @@ _
             src_plang => 'bash',
         },
         {
+            summary => 'Coerce multiple data',
             src => q([[prog]] date --coerce-to 'float(epoch)' --multiple-data-as-perl '["2016-05-15", "1463328281"]'),
+            src_plang => 'bash',
+        },
+        {
+            summary => 'Add one or more coerce rules',
+            src => q([[prog]] duration --coerce-rule str_human --coerce-rule str_iso8601 --data-as-perl '"P1Y2M"'),
             src_plang => 'bash',
         },
         {
