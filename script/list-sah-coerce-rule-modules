@@ -25,6 +25,7 @@ my $res = gen_read_table_func(
             (my $mod_pm = "$mod.pm") =~ s!::!/!g;
             require $mod_pm;
             my $meta = $mod->meta;
+            $row->{v} = $meta->{v};
             $row->{prio} = $meta->{prio};
             $row->{enable_by_default} = $meta->{enable_by_default};
             push @rows, $row;
@@ -38,14 +39,19 @@ my $res = gen_read_table_func(
                 pos => 0,
                 sortable => 1,
             },
+            v => {
+                schema => 'str*',
+                pos => 1,
+                sortable => 1,
+            },
             prio => {
                 schema => 'int*',
-                pos => 1,
+                pos => 2,
                 sortable => 1,
             },
             enable_by_default => {
                 schema => 'bool*',
-                pos => 2,
+                pos => 3,
                 sortable => 1,
             },
         },
