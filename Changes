@@ -1,3 +1,9 @@
+0.466   2019-10-24  Released-By: PERLANCAR; Urgency: medium
+
+	- list-sah-coerce-rule-modules: remove enable_by_default field
+	  (old, for v <= 3), add might_fail field.
+
+
 0.465   2019-07-25  Released-By: PERLANCAR; Urgency: medium
 
 	- list-sah-coerce-rule-modules: Show metadata v when --detail.
