@@ -49,7 +49,7 @@ my $res = gen_read_table_func(
                 pos => 2,
                 sortable => 1,
             },
-            enable_by_default => {
+            might_fail => {
                 schema => 'bool*',
                 pos => 3,
                 sortable => 1,
