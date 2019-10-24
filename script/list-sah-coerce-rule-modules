@@ -4,7 +4,7 @@
 # VERSION
 
 #use 5.010001;
-use strict;
+use strict 'subs', 'vars';
 use warnings;
 
 use Perinci::CmdLine::Any;
@@ -25,6 +25,7 @@ my $res = gen_read_table_func(
             (my $mod_pm = "$mod.pm") =~ s!::!/!g;
             require $mod_pm;
             my $meta = $mod->meta;
+            $row->{dist} = ${"$mod\::DIST"};
             $row->{v} = $meta->{v};
             $row->{prio} = $meta->{prio};
             $row->{might_fail} = $meta->{might_fail};
@@ -39,19 +40,24 @@ my $res = gen_read_table_func(
                 pos => 0,
                 sortable => 1,
             },
-            v => {
+            dist => {
                 schema => 'str*',
                 pos => 1,
                 sortable => 1,
             },
+            v => {
+                schema => 'str*',
+                pos => 2,
+                sortable => 1,
+            },
             prio => {
                 schema => 'int*',
-                pos => 2,
+                pos => 3,
                 sortable => 1,
             },
             might_fail => {
                 schema => 'bool*',
-                pos => 3,
+                pos => 4,
                 sortable => 1,
             },
         },
