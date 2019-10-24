@@ -1,3 +1,8 @@
+0.468   2019-10-24  Released-By: PERLANCAR; Urgency: medium
+
+	- list-sah-coerce-rule-modules: show dist field.
+
+
 0.467   2019-10-24  Released-By: PERLANCAR; Urgency: medium
 
 	- [bugfix] Derp, forgot to actually return the new field.
