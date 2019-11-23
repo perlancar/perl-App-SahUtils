@@ -1,3 +1,8 @@
+0.466   2019-11-23  Released-By: PERLANCAR; Urgency: medium
+
+	- [list-sah-schema-modules] Show summary.
+
+
 0.465   2019-07-25  Released-By: PERLANCAR; Urgency: medium
 
 	- list-sah-coerce-rule-modules: Show metadata v when --detail.
