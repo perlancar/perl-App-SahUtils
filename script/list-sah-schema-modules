@@ -27,6 +27,7 @@ my $res = gen_read_table_func(
             require $mod_pm;
             my $sch = ${"$mod\::schema"};
             $row->{base} = $sch->[0];
+            $row->{summary} = $sch->[1]{summary};
             push @rows, $row;
         }
         {data => \@rows};
