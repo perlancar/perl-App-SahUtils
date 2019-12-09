@@ -164,7 +164,7 @@ _
         },
         {
             summary => 'Add one or more coerce rules',
-            src => q([[prog]] duration --coerce-rule str_human --coerce-rule str_iso8601 --data-as-perl '"P1Y2M"'),
+            src => q([[prog]] duration --coerce-rule From_str::human --coerce-rule From_str::iso8601 --data-as-perl '"P1Y2M"'),
             src_plang => 'bash',
         },
         {
