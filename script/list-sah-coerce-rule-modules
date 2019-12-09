@@ -25,6 +25,7 @@ my $res = gen_read_table_func(
             (my $mod_pm = "$mod.pm") =~ s!::!/!g;
             require $mod_pm;
             my $meta = $mod->meta;
+            $row->{summary} = $meta->{summary};
             $row->{dist} = ${"$mod\::DIST"};
             $row->{v} = $meta->{v};
             $row->{prio} = $meta->{prio};
@@ -40,24 +41,29 @@ my $res = gen_read_table_func(
                 pos => 0,
                 sortable => 1,
             },
-            dist => {
+            summary => {
                 schema => 'str*',
                 pos => 1,
                 sortable => 1,
             },
-            v => {
+            dist => {
                 schema => 'str*',
                 pos => 2,
                 sortable => 1,
             },
+            v => {
+                schema => 'str*',
+                pos => 3,
+                sortable => 1,
+            },
             prio => {
                 schema => 'int*',
-                pos => 3,
+                pos => 4,
                 sortable => 1,
             },
             might_fail => {
                 schema => 'bool*',
-                pos => 4,
+                pos => 5,
                 sortable => 1,
             },
         },
