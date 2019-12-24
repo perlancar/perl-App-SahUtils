@@ -1,3 +1,8 @@
+0.472   2019-12-25  Released-By: PERLANCAR; Urgency: low
+
+	- Replace PERLANCAR::Module::List with Module::List::Tiny.
+
+
 0.471   2019-12-09  Released-By: PERLANCAR; Urgency: medium
 
 	- [list-sah-coerce-rule-modules] Show summary in --detail (-l).
