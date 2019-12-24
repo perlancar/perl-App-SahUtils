@@ -34,9 +34,9 @@ my $res = gen_read_table_func(
     },
     table_data => sub {
         no strict 'refs';
-        require PERLANCAR::Module::List;
+        require Module::List::Tiny;
 
-        my $mods = PERLANCAR::Module::List::list_modules(
+        my $mods = Module::List::Tiny::list_modules(
             'Data::Sah::Type::', {list_modules=>1, recurse=>1});
         my @rows;
         for my $mod (sort keys %$mods) {

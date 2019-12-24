@@ -26,8 +26,8 @@ my $res = gen_read_table_func(
         pk => 'name',
     },
     table_data => sub {
-        require PERLANCAR::Module::List;
-        my $mods = PERLANCAR::Module::List::list_modules(
+        require Module::List::Tiny;
+        my $mods = Module::List::Tiny::list_modules(
             'Sah::Schemas::', {list_modules=>1, recurse=>1});
         my @rows;
         for my $mod (sort keys %$mods) {

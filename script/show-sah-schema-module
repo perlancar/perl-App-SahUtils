@@ -39,8 +39,8 @@ sub app {
 
     if ($args{list}) {
         my @res;
-        require PERLANCAR::Module::List;
-        my $res = PERLANCAR::Module::List::list_modules(
+        require Module::List::Tiny;
+        my $res = Module::List::Tiny::list_modules(
             'Sah::Schema::', {list_modules=>1, recurse=>1});
         for (sort keys %$res) {
             s/\ASah::Schema:://;

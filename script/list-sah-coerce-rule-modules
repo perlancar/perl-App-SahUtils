@@ -9,13 +9,13 @@ use warnings;
 
 use Perinci::CmdLine::Any;
 use Perinci::Sub::Gen::AccessTable qw(gen_read_table_func);
-use PERLANCAR::Module::List;
+use Module::List::Tiny;
 
 my $res = gen_read_table_func(
     name => 'app',
     summary => 'List Sah coerce rule modules',
     table_data => sub {
-        my $mods = PERLANCAR::Module::List::list_modules(
+        my $mods = Module::List::Tiny::list_modules(
             'Data::Sah::Coerce::', {list_modules=>1, recurse=>1});
 
         my @rows;
