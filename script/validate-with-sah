@@ -41,7 +41,7 @@ _
     },
     args => {
         schema => {
-            schema=>'any*',
+            schema=>['any*', 'x.perl.coerce_rules'=>['From_str::try_json_decode']],
             pos=>0,
             tags => ['category:schema-specification'],
         },
