@@ -26,7 +26,7 @@ $SPEC{filter_with_sah} = {
         filter_names => {
             'x.name.is_plural' => 1,
             'x.name.singular' => 'filter_name',
-            schema => ['array*', of=>'str*'],
+            schema => ['array*', of=>['any', of=>['str*', 'array*']]],
             req => 1,
             tags => ['category:filter-specification'],
             element_completion => sub {
@@ -45,6 +45,12 @@ $SPEC{filter_with_sah} = {
                     ns_prefix => "Data::Sah::Filter::$compiler::$type",
                 );
             },
+        },
+        return_type => {
+            schema => ['str*', in=>[qw/val str_errmsg+val/]],
+            default => 'val',
+            cmdline_aliases => {r=>{}},
+            tags => ['category:filter-specification'],
         },
 
         data_as_json => {
@@ -110,10 +116,10 @@ _
         },
     },
     examples => [
-        {
-            src => q([[prog]] --filter-name Str::ltrim --filter-name Str::rtrim --data-as-perl '"  foo  "'),
-            src_plang => 'bash',
-        },
+        #{
+        #    src => q([[prog]] --filter-name '"Str::ltrim"' --filter-name '"Str::rtrim"' --data-as-perl '"  foo  "'),
+        #    src_plang => 'bash',
+        #},
     ],
 };
 sub filter_with_sah {
@@ -129,6 +135,7 @@ sub filter_with_sah {
             no strict 'refs';
             my %gen_args = (
                 filter_names => $args{filter_names},
+                return_type  => $args{return_type},
             );
             $gen_args{source} = 1 if $args{show_code};
             #$gen_opts{debug} = 1 if $args{with_debug};
