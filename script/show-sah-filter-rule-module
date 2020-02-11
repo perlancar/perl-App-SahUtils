@@ -1,6 +1,8 @@
 #!perl
 
+# AUTHORITY
 # DATE
+# DIST
 # VERSION
 
 use 5.010001;
@@ -12,7 +14,7 @@ our %SPEC;
 
 $SPEC{app} = {
     v => 1.1,
-    summary => 'Show schema from Data::Sah::Coerce::{,perl,js} module',
+    summary => 'Show Data::Sah::Filter::{,perl,js} module',
     args => {
         name => {
             schema => ['perl::modname*'],
@@ -24,15 +26,15 @@ $SPEC{app} = {
                 Complete::Util::combine_answers(
                     Complete::Module::complete_module(
                         word => $args{word},
-                        ns_prefix => 'Data::Sah::Coerce',
+                        ns_prefix => 'Data::Sah::Filter',
                     ),
                     Complete::Module::complete_module(
                         word => $args{word},
-                        ns_prefix => 'Data::Sah::Coerce::perl',
+                        ns_prefix => 'Data::Sah::Filter::perl',
                     ),
                     Complete::Module::complete_module(
                         word => $args{word},
-                        ns_prefix => 'Data::Sah::Coerce::js',
+                        ns_prefix => 'Data::Sah::Filter::js',
                     ),
                 );
             },
@@ -52,9 +54,9 @@ sub app {
         my @res;
         require Module::List::Tiny;
         my $res = Module::List::Tiny::list_modules(
-            'Data::Sah::Coerce::', {list_modules=>1, recurse=>1});
+            'Data::Sah::Filter::', {list_modules=>1, recurse=>1});
         for (sort keys %$res) {
-            s/\AData::Sah::Coerce:://;
+            s/\AData::Sah::Filter:://;
             push @res, $_;
         }
         return [200, "OK", \@res];
@@ -64,16 +66,16 @@ sub app {
         $name =~ /\A\w+(::\w+)*\z/
             or return [400, "Invalid module name '$name'"];;
         my $found;
-        for my $prefix ("Data::Sah::Coerce", "Data::Sah::Coerce::perl", "Data::Sah::Coerce::js", "") {
+        for my $prefix ("Data::Sah::Filter", "Data::Sah::Filter::perl", "Data::Sah::Filter::js", "") {
             my $fullname = "$prefix\::$name";
             my $path = Module::Path::More::module_path(module => $fullname);
             next unless $path;
             $found++;
             return [200, "OK", File::Slurper::read_text($path)];
         }
-        return [404, "No such coerce module name '$name'"] unless $found;
+        return [404, "No such filter module name '$name'"] unless $found;
     } else {
-        return [400, "Please specify name of a Sah schema module (or -l)"];
+        return [400, "Please specify name of a Sah filter module (or -l)"];
     }
 }
 
@@ -87,4 +89,4 @@ Perinci::CmdLine::Any->new(
 
 =head1 SEE ALSO
 
-L<list-sah-coerce-rulex-modules>
+L<list-sah-filter-rule-modules>

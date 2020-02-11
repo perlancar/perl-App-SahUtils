@@ -1,0 +1,83 @@
+#!perl
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
+
+#use 5.010001;
+use strict 'subs', 'vars';
+use warnings;
+
+use Perinci::CmdLine::Any;
+use Perinci::Sub::Gen::AccessTable qw(gen_read_table_func);
+use Module::List::Tiny;
+
+my $res = gen_read_table_func(
+    name => 'app',
+    summary => 'List Sah filter rule modules',
+    table_data => sub {
+        my $mods = Module::List::Tiny::list_modules(
+            'Data::Sah::Filter::', {list_modules=>1, recurse=>1});
+
+        my @rows;
+        for my $mod (sort keys %$mods) {
+            $mod =~ /\AData::Sah::Filter::(?=[a-z])(.+)/ or next;
+            my $row = {rule=>$1};
+            (my $mod_pm = "$mod.pm") =~ s!::!/!g;
+            require $mod_pm;
+            my $meta = $mod->meta;
+            $row->{summary} = $meta->{summary};
+            $row->{dist} = ${"$mod\::DIST"};
+            $row->{v} = $meta->{v};
+            $row->{might_fail} = $meta->{might_fail};
+            push @rows, $row;
+        }
+        return {data=>\@rows};
+    },
+    table_spec => {
+        fields => {
+            rule => {
+                schema => 'str*',
+                pos => 0,
+                sortable => 1,
+            },
+            summary => {
+                schema => 'str*',
+                pos => 1,
+                sortable => 1,
+            },
+            dist => {
+                schema => 'str*',
+                pos => 2,
+                sortable => 1,
+            },
+            v => {
+                schema => 'str*',
+                pos => 3,
+                sortable => 1,
+            },
+            prio => {
+                schema => 'int*',
+                pos => 4,
+                sortable => 1,
+            },
+            might_fail => {
+                schema => 'bool*',
+                pos => 5,
+                sortable => 1,
+            },
+        },
+        pk => 'rule',
+    },
+);
+die "Can't generate function: $res->[0] - $res->[1]" unless $res->[0] == 200;
+
+Perinci::CmdLine::Any->new(url => '/main/app')->run;
+
+# ABSTRACT:
+# PODNAME:
+
+=head1 SEE ALSO
+
+<show-sah-filter-module>
