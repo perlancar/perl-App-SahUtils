@@ -154,6 +154,7 @@ _
         show_raw_compile => {
             summary => "Don't validate data, show raw compilation result only",
             schema=>['bool', is=>1],
+            cmdline_aliases => {R=>{}},
             tags => ['category:action-selection'],
         },
         show_code => {
