@@ -1,3 +1,8 @@
+0.475   2020-02-11  Released-By: PERLANCAR; Urgency: medium
+
+	- [filter-with-sah] Add --return-type option.
+
+
 0.474   2020-02-11  Released-By: PERLANCAR; Urgency: medium
 
 	- Add utilities: list-sah-filter-rule-modules,
