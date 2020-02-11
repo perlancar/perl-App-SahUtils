@@ -41,7 +41,7 @@ _
     },
     args => {
         schema => {
-            #schema=>['any*', 'x.perl.coerce_rules'=>['From_str::try_json_decode']], # doesn't work well yet
+            #schema=>['any*', prefilters=>['Str::try_decode_json']], # doesn't work yet because Perinci::Sub::GetArgs::Argv croaks before we get to here
             schema=>['any*'],
             pos=>0,
             tags => ['category:schema-specification'],
