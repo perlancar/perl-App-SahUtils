@@ -118,7 +118,18 @@ _
         },
 
         return_type => {
-            schema=>['str*', in=>[qw/bool bool+val str str+val full/]],
+            schema=>['str*', {
+                in => [qw/bool_valid bool_valid+val str_errmsg str_errmsg+val hash_details/],
+                prefilters => [
+                    ["Str::replace_map", {map=>{
+                        "bool"     => "bool_valid",
+                        "bool+val" => "bool_valid+val",
+                        "str"      => "str_errmsg",
+                        "str+val"  => "str_errmsg+val",
+                        "full"     => "hash_details",
+                    }}],
+                ],
+            }],
             default=>'str',
             cmdline_aliases => {
                 r => {},
