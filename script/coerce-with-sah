@@ -1,6 +1,8 @@
 #!perl
 
+# AUTHORITY
 # DATE
+# DIST
 # VERSION
 
 use 5.010;
@@ -8,6 +10,7 @@ use strict;
 use warnings;
 
 use Perinci::CmdLine::Any;
+use Data::Sah::CoerceCommon;
 
 our %SPEC;
 
@@ -23,11 +26,10 @@ $SPEC{coerce_with_sah} = {
     },
     args => {
         type => {
-            schema => 'str*',
+            schema => 'sah::type_name*',
             req => 1,
             pos => 0,
             tags => ['category:coercer-specification'],
-            'x.schema.entity' => 'sah::type_name',
         },
         coerce_to => {
             schema => 'str*',
@@ -55,7 +57,15 @@ $SPEC{coerce_with_sah} = {
             },
         },
         return_type => {
-            schema => ['str*', in=>[qw/val status+val status+err+val/]],
+            schema => ['str*', {
+                in => [qw/val bool_coerced+val bool_coerced+str_errmsg+val/],
+                prefilters => [
+                    ["Str::replace_map", {map=>{
+                        "status+val"     => "bool_coerced+val",
+                        "status+err+val" => "bool_coerced+str_errmsg+val",
+                    }}],
+                ],
+            }],
             default => 'val',
             cmdline_aliases => {r=>{}},
             tags => ['category:coercer-specification'],
