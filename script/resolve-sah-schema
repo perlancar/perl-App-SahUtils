@@ -1,6 +1,8 @@
 #!perl
 
+# AUTHORITY
 # DATE
+# DIST
 # VERSION
 
 use 5.010001;
@@ -21,8 +23,14 @@ $SPEC{resolve_sah_schema} = {
             pos => 0,
         },
         merge_clause_sets => {
-            schema => 'bool',
+            schema => 'bool*',
             default => 1,
+        },
+        stop_after_no_merge_keys => {
+            schema => 'bool*',
+        },
+        min_steps => {
+            schema => 'uint*',
         },
     },
 };
@@ -42,7 +50,9 @@ sub resolve_sah_schema {
 
     my $nsch = Data::Sah::Resolve::resolve_schema(
         {
-            merge_clause_sets    => $args{merge_clause_sets},
+            merge_clause_sets        => $args{merge_clause_sets},
+            stop_after_no_merge_keys => $args{stop_after_no_merge_keys},
+            (defined($args{min_steps}) ? (min_steps=>$args{min_steps}) : ()),
         },
         $sch);
 
