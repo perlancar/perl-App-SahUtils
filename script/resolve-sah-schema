@@ -20,9 +20,6 @@ $SPEC{resolve_sah_schema} = {
             req => 1,
             pos => 0,
         },
-        return_intermediates => {
-            schema => 'bool',
-        },
         merge_clause_sets => {
             schema => 'bool',
             default => 1,
@@ -45,7 +42,6 @@ sub resolve_sah_schema {
 
     my $nsch = Data::Sah::Resolve::resolve_schema(
         {
-            return_intermediates => $args{return_intermediates},
             merge_clause_sets    => $args{merge_clause_sets},
         },
         $sch);
