@@ -476,6 +476,7 @@ sub validate_with_sah {
 my $cli = Perinci::CmdLine::Any->new(
     url => '/main/validate_with_sah',
     pass_cmdline_object => 1,
+    log => 1,
 );
 $cli->{common_opts}{naked_res}{default} = 1;
 $cli->run;
