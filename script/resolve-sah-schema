@@ -26,6 +26,10 @@ $SPEC{resolve_sah_schema} = {
             schema => 'bool*',
             default => 1,
         },
+        allow_base_with_no_additional_clauses => {
+            schema => 'bool*',
+            default => 0,
+        },
     },
 };
 sub resolve_sah_schema {
@@ -62,17 +66,7 @@ Perinci::CmdLine::Any->new(
 
 =head1 SYNOPSIS
 
- % resolve-sah-schema '"int"'
- ["int", []]
-
- % resolve-sah-schema '"posint"' ; # will look Sah::Schema::posint up
- ["int", {min=>1}]
-
- % resolve-sah-schema '["posint", div_by=>2]'
- ["int", {min=>1}, {div_by=>2}]
-
- % resolve-sah-schema '["posint", "merge.delete.min"=>undef, div_by=>2]'
- ["int", {div_by=>2}]
+ % resolve-sah-schema '"posint"'
 
 
 =head1 DESCRIPTION
