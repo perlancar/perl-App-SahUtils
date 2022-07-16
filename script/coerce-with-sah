@@ -41,12 +41,12 @@ $SPEC{coerce_with_sah} = {
             tags => ['category:coercer-specification'],
             element_completion => sub {
                 my %args = @_;
-                my $cmdline = $args{cmdline} or return undef;
+                my $cmdline = $args{cmdline} or return;
                 my $r = $args{r};
 
                 $r->{read_config} = 1;
                 my $res = $cmdline->parse_argv($r);
-                my $type = $res->[2]{type} or return undef;
+                my $type = $res->[2]{type} or return;
                 my $compiler = $res->[2]{compiler} // 'perl';
 
                 require Complete::Module;
@@ -217,7 +217,7 @@ sub coerce_with_sah {
 
         my $gen_res;
         {
-            no strict 'refs';
+            no strict 'refs'; ## no critic: TestingAndDebugging::ProhibitNoStrict
             my %gen_args = (
                 type => $args{type},
                 return_type => $args{return_type},
@@ -262,10 +262,10 @@ sub coerce_with_sah {
             $data = JSON::MaybeXS->new->allow_nonref->decode($args{multiple_data_as_json});
             $multiple = 1;
         } elsif (defined $args{data_as_perl}) {
-            $data = eval $args{data_as_perl};
+            $data = eval $args{data_as_perl}; ## no critic: BuiltinFunctions::ProhibitStringyEval
             die if $@;
         } elsif (defined $args{multiple_data_as_perl}) {
-            $data = eval $args{multiple_data_as_perl};
+            $data = eval $args{multiple_data_as_perl}; ## no critic: BuiltinFunctions::ProhibitStringyEval
             die if $@;
             $multiple = 1;
         } else {

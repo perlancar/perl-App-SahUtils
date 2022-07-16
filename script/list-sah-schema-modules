@@ -17,7 +17,7 @@ my $res = gen_read_table_func(
     name => 'app',
     summary => 'List Sah schema modules',
     table_data => sub {
-        no strict 'refs';
+        no strict 'refs'; ## no critic: TestingAndDebugging::ProhibitNoStrict
 
         my $mods = Module::List::Tiny::list_modules(
             'Sah::Schema::', {list_modules=>1, recurse=>1});

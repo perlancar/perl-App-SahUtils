@@ -35,7 +35,7 @@ my $res = gen_read_table_func(
         pk => 'name',
     },
     table_data => sub {
-        no strict 'refs';
+        no strict 'refs'; ## no critic: TestingAndDebugging::ProhibitNoStrict
         require Module::List::Tiny;
 
         my $mods = Module::List::Tiny::list_modules(

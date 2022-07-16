@@ -42,7 +42,7 @@ sub resolve_sah_schema {
     if ($args{schema} =~ /\A\w+(::\w+)*\*?\z/) {
         $sch = $args{schema};
     } else {
-        eval "\$sch = $args{schema}";
+        eval "\$sch = $args{schema}"; ## no critic: BuiltinFunctions::ProhibitStringyEval
         die if $@;
     }
 

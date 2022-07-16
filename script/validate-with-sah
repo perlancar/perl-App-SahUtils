@@ -320,14 +320,14 @@ sub validate_with_sah {
             } elsif ($type eq 'perl') {
                 require File::Slurper;
                 my $ct = File::Slurper::read_text($path);
-                $schema = eval $ct;
+                $schema = eval $ct; ## no critic: BuiltinFunctions::ProhibitStringyEval
                 die if $@;
             } else {
                 $res = [400, "Unknown schema file type '$type', please specify json/yaml"];
                 last GET_RESULT;
             }
         } elsif (defined $args{schema_module}) {
-            no strict 'refs';
+            no strict 'refs'; ## no critic: TestingAndDebugging::ProhibitNoStrict
             my $mod = "Sah::Schema::$args{schema_module}";
             (my $mod_pm = "$mod.pm") =~ s!::!/!g;
             require $mod_pm;
@@ -347,7 +347,7 @@ sub validate_with_sah {
         my $func;
         my $obj;
         {
-            no strict 'refs';
+            no strict 'refs'; ## no critic: TestingAndDebugging::ProhibitNoStrict
             my $c = $args{compiler};
             if ($c eq 'perl') {
                 require Data::Sah;
@@ -432,7 +432,7 @@ sub validate_with_sah {
             } elsif ($type eq 'perl') {
                 require File::Slurper;
                 my $ct = File::Slurper::read_text($path);
-                $data = eval $ct;
+                $data = eval $ct; ## no critic: BuiltinFunctions::ProhibitStringyEval
                 die if $@;
             } else {
                 $res = [400, "Unknown data file type '$type', please specify json/yaml"];

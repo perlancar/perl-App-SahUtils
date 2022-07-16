@@ -31,7 +31,7 @@ $SPEC{format_with_sah} = {
             tags => ['category:formatter-specification'],
             completion => sub {
                 my %args = @_;
-                my $cmdline = $args{cmdline} or return undef;
+                my $cmdline = $args{cmdline} or return;
                 my $r = $args{r};
 
                 $r->{read_config} = 1;
@@ -143,7 +143,7 @@ sub format_with_sah {
     {
         my $gen_res;
         {
-            no strict 'refs';
+            no strict 'refs'; ## no critic: TestingAndDebugging::ProhibitNoStrict
             my %gen_args = (
                 format => $args{format},
                 (formatter_args => $args{formatter_args}) x !!$args{formatter_args},
@@ -186,10 +186,10 @@ sub format_with_sah {
             $data = JSON::MaybeXS->new->allow_nonref->decode($args{multiple_data_as_json});
             $multiple = 1;
         } elsif (defined $args{data_as_perl}) {
-            $data = eval $args{data_as_perl};
+            $data = eval $args{data_as_perl}; ## no critic: BuiltinFunctions::ProhibitStringyEval
             die if $@;
         } elsif (defined $args{multiple_data_as_perl}) {
-            $data = eval $args{multiple_data_as_perl};
+            $data = eval $args{multiple_data_as_perl}; ## no critic: BuiltinFunctions::ProhibitStringyEval
             die if $@;
             $multiple = 1;
         } else {

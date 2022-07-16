@@ -10,10 +10,11 @@ use Data::Dump::Color;
 # VERSION
 
 @ARGV == 1 or die "Usage: $0 <sah-schema-in-perl-code>\n";
+my $sch;
 if ($ARGV[0] =~ /\A\w+(::\w+)*\*?\z/) {
     $sch = $ARGV[0];
 } else {
-    eval "\$sch = $ARGV[0]";
+    eval "\$sch = $ARGV[0]"; ## no critic: BuiltinFunctions::ProhibitStringyEval
     die if $@;
 }
 
