@@ -14,11 +14,9 @@ use Perinci::Sub::Gen::AccessTable qw(gen_read_table_func);
 
 our %SPEC;
 
-# XXX add option: include base classes or not
-
 my $res = gen_read_table_func(
     name => 'app',
-    summary => 'List Sah type modules (Data::Sah::Type::*)',
+    summary => 'List Sah::PSchemas::* modules',
     table_spec => {
         fields => {
             name => {
@@ -26,33 +24,18 @@ my $res = gen_read_table_func(
                 pos => 0,
                 sortable => 1,
             },
-            #base => {
-            #    schema => 'str*',
-            #    pos => 1,
-            #    sortable => 1,
-            #},
         },
         pk => 'name',
     },
     table_data => sub {
-        no strict 'refs';
         require Module::List::Tiny;
-
         my $mods = Module::List::Tiny::list_modules(
-            'Data::Sah::Type::', {list_modules=>1, recurse=>1});
+            'Sah::PSchemas::', {list_modules=>1, recurse=>1});
         my @rows;
         for my $mod (sort keys %$mods) {
-            (my $name = $mod) =~ s/\AData::Sah::Type:://;
-            (my $mod_pm = "$mod.pm") =~ s!::!/!g;
-            require $mod_pm;
-
-            # type modules uses roles instead of inheritance
-            #my @isa = @{"$mod\::ISA"};
-            #for (@isa) { s/^Data::Sah::Type::// }
-
+            (my $name = $mod) =~ s/\ASah::PSchemas:://;
             push @rows, {
                 name => $name,
-                #base => join(", ", @isa),
             };
         }
         {data => \@rows};
@@ -66,3 +49,7 @@ Perinci::CmdLine::Any->new(
 
 # ABSTRACT:
 # PODNAME:
+
+=head1 SEE ALSO
+
+L<list-sah-pschema-modules>

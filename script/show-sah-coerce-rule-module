@@ -1,12 +1,14 @@
 #!perl
 
-# DATE
-# VERSION
-
 use 5.010001;
 use strict 'subs', 'vars';
 use warnings;
 use Perinci::CmdLine::Any;
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
 
 our %SPEC;
 

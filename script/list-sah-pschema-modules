@@ -1,7 +1,7 @@
 #!perl
 
-#use 5.010001;
-use strict 'subs', 'vars';
+use 5.010001;
+use strict;
 use warnings;
 
 use Perinci::CmdLine::Any;
@@ -15,30 +15,28 @@ use Module::List::Tiny;
 
 my $res = gen_read_table_func(
     name => 'app',
-    summary => 'List Sah coerce rule modules',
+    summary => 'List Sah parameterized schema modules',
     table_data => sub {
-        my $mods = Module::List::Tiny::list_modules(
-            'Data::Sah::Coerce::', {list_modules=>1, recurse=>1});
+        no strict 'refs';
 
+        my $mods = Module::List::Tiny::list_modules(
+            'Sah::PSchema::', {list_modules=>1, recurse=>1});
         my @rows;
         for my $mod (sort keys %$mods) {
-            $mod =~ /\AData::Sah::Coerce::(?=[a-z])(.+)/ or next;
-            my $row = {rule=>$1};
+            $mod =~ /\ASah::PSchema::(.+)/;
+            my $row = {schema=>$1};
             (my $mod_pm = "$mod.pm") =~ s!::!/!g;
             require $mod_pm;
             my $meta = $mod->meta;
             $row->{summary} = $meta->{summary};
-            $row->{dist} = ${"$mod\::DIST"};
-            $row->{v} = $meta->{v};
-            $row->{prio} = $meta->{prio};
-            $row->{might_fail} = $meta->{might_fail};
+            $row->{args} = join(", ", sort keys %{ $meta->{args} // {} });
             push @rows, $row;
         }
-        return {data=>\@rows};
+        {data => \@rows};
     },
     table_spec => {
         fields => {
-            rule => {
+            schema => {
                 schema => 'str*',
                 pos => 0,
                 sortable => 1,
@@ -48,28 +46,13 @@ my $res = gen_read_table_func(
                 pos => 1,
                 sortable => 1,
             },
-            dist => {
+            args => {
                 schema => 'str*',
                 pos => 2,
-                sortable => 1,
-            },
-            v => {
-                schema => 'str*',
-                pos => 3,
-                sortable => 1,
-            },
-            prio => {
-                schema => 'int*',
-                pos => 4,
-                sortable => 1,
-            },
-            might_fail => {
-                schema => 'bool*',
-                pos => 5,
-                sortable => 1,
+                sortable => 0,
             },
         },
-        pk => 'rule',
+        pk => 'schema',
     },
 );
 die "Can't generate function: $res->[0] - $res->[1]" unless $res->[0] == 200;
@@ -81,4 +64,4 @@ Perinci::CmdLine::Any->new(url => '/main/app')->run;
 
 =head1 SEE ALSO
 
-<show-sah-coerce-module>
+L<list-sah-pschemas-modules>

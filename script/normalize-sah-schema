@@ -1,9 +1,13 @@
 #!perl
 
-# DATE
-# VERSION
+use strict;
 
 use Data::Dump::Color;
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
 
 @ARGV == 1 or die "Usage: $0 <sah-schema-in-perl-code>\n";
 if ($ARGV[0] =~ /\A\w+(::\w+)*\*?\z/) {

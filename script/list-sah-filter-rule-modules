@@ -1,10 +1,5 @@
 #!perl
 
-# AUTHORITY
-# DATE
-# DIST
-# VERSION
-
 #use 5.010001;
 use strict 'subs', 'vars';
 use warnings;
@@ -12,6 +7,11 @@ use warnings;
 use Perinci::CmdLine::Any;
 use Perinci::Sub::Gen::AccessTable qw(gen_read_table_func);
 use Module::List::Tiny;
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
 
 my $res = gen_read_table_func(
     name => 'app',

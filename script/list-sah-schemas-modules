@@ -1,14 +1,16 @@
 #!perl
 
-# DATE
-# VERSION
-
 #use 5.010001;
 use strict;
 use warnings;
 
 use Perinci::CmdLine::Any;
 use Perinci::Sub::Gen::AccessTable qw(gen_read_table_func);
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
 
 our %SPEC;
 
