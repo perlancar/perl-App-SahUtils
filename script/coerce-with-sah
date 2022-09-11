@@ -52,7 +52,7 @@ $SPEC{coerce_with_sah} = {
                 require Complete::Module;
                 Complete::Module::complete_module(
                     word => $args{word},
-                    ns_prefix => "Data::Sah::Coerce::$compiler::$type",
+                    ns_prefix => "Data::Sah::Coerce::$compiler\::$type",
                 );
             },
         },
