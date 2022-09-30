@@ -171,7 +171,7 @@ _
             tags => ['category:action-selection'],
         },
         show_code => {
-            summary => "Don't validate data, show generated validator code only",
+            summary => "Don't validate data, show generated validator source code only",
             schema=>['bool', is=>1],
             cmdline_aliases => {c=>{}},
             tags => ['category:action-selection'],
@@ -191,7 +191,7 @@ _
             summary => 'Generate validator with debug on',
             description => <<'_',
 
-This means e.g. to pepper the validator code with logging statements.
+This means e.g. to pepper the validator source code with logging statements.
 
 _
             schema => ['bool', is=>1],
@@ -266,7 +266,12 @@ _
         {
             src => q([[prog]] '["int","min",1,"max",10]' -c -l),
             src_plang => 'bash',
-            summary => 'Show validator Perl code only, with line number',
+            summary => 'Show validator Perl source code only, with line number',
+        },
+        {
+            src => q([[prog]] '["date"]' -c --no-coerce),
+            src_plang => 'bash',
+            summary => 'Show validator Perl source code, with no coercion code',
         },
         {
             src => q([[prog]] '["int","min",1,"max",10]' -c -C js),
@@ -276,7 +281,7 @@ _
         {
             src => q([[prog]] '["int","min",1,"max",10]' -C js -c -l),
             src_plang => 'bash',
-            summary => 'Show validator JS code only, with line number',
+            summary => 'Show validator JS source code only, with line number',
         },
         {
             src => q{[[prog]] -f schema1.json '["data"]'},
