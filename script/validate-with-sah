@@ -230,6 +230,7 @@ _
         },
         coerce => {
             summary => 'Whether to generate coercion code',
+            'summary.alt.bool.not' => 'Generate validator that does not do coercions',
             schema => 'bool',
             default => 1,
             tags => ['category:validator-specification'],
