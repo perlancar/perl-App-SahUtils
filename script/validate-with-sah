@@ -271,7 +271,12 @@ _
         {
             src => q([[prog]] '["date"]' -c --no-coerce),
             src_plang => 'bash',
-            summary => 'Show validator Perl source code, with no coercion code',
+            summary => 'Show validator Perl source code, with no coercion code (the validator will only accept epochs)',
+        },
+        {
+            src => q([[prog]] '["date",{"x.perl.coerce_to":"DateTime"}]' -c --no-coerce),
+            src_plang => 'bash',
+            summary => 'Show validator Perl source code, with no coercion code (the validator will only accept DateTime objects)',
         },
         {
             src => q([[prog]] '["int","min",1,"max",10]' -c -C js),
