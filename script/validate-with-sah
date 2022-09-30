@@ -228,6 +228,13 @@ _
             cmdline_aliases => {C=>{}},
             tags => ['category:validator-specification'],
         },
+        coerce => {
+            summary => 'Whether to generate coercion code',
+            schema => 'bool',
+            default => 1,
+            tags => ['category:validator-specification'],
+        },
+
         linenum => {
             summary => 'When showing source code, add line numbers',
             schema=>['bool', is=>1],
@@ -378,6 +385,7 @@ sub validate_with_sah {
             $gen_opts{core} = 1 if $args{core};
             $gen_opts{core_or_pp} = 1 if $args{core_or_pp};
             $gen_opts{no_modules} = 1 if $args{no_modules};
+            $gen_opts{coerce} = $args{coerce} // 1;
         }
 
         if ($args{show_raw_compile}) {
