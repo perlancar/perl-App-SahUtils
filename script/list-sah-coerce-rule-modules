@@ -14,7 +14,7 @@ use Module::List::Tiny;
 # VERSION
 
 my $res = gen_read_table_func(
-    name => 'app',
+    name => 'list_sah_coerce_rule_modules',
     summary => 'List Sah coerce rule modules',
     table_data => sub {
         my $mods = Module::List::Tiny::list_modules(
@@ -74,7 +74,7 @@ my $res = gen_read_table_func(
 );
 die "Can't generate function: $res->[0] - $res->[1]" unless $res->[0] == 200;
 
-Perinci::CmdLine::Any->new(url => '/main/app')->run;
+Perinci::CmdLine::Any->new(url => '/main/list_sah_coerce_rule_modules')->run;
 
 # ABSTRACT:
 # PODNAME:
