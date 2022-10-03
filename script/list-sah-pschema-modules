@@ -14,7 +14,7 @@ use Module::List::Tiny;
 # VERSION
 
 my $res = gen_read_table_func(
-    name => 'app',
+    name => 'list_sah_pschema_modules',
     summary => 'List Sah parameterized schema modules',
     table_data => sub {
         no strict 'refs'; ## no critic: TestingAndDebugging::ProhibitNoStrict
@@ -28,6 +28,7 @@ my $res = gen_read_table_func(
             (my $mod_pm = "$mod.pm") =~ s!::!/!g;
             require $mod_pm;
             my $meta = $mod->meta;
+            $row->{dist} = ${"$mod\::DIST"};
             $row->{summary} = $meta->{summary};
             $row->{args} = join(", ", sort keys %{ $meta->{args} // {} });
             push @rows, $row;
@@ -41,14 +42,19 @@ my $res = gen_read_table_func(
                 pos => 0,
                 sortable => 1,
             },
-            summary => {
+            dist => {
                 schema => 'str*',
                 pos => 1,
                 sortable => 1,
             },
-            args => {
+            summary => {
                 schema => 'str*',
                 pos => 2,
+                sortable => 1,
+            },
+            args => {
+                schema => 'str*',
+                pos => 3,
                 sortable => 0,
             },
         },
@@ -57,7 +63,7 @@ my $res = gen_read_table_func(
 );
 die "Can't generate function: $res->[0] - $res->[1]" unless $res->[0] == 200;
 
-Perinci::CmdLine::Any->new(url => '/main/app')->run;
+Perinci::CmdLine::Any->new(url => '/main/list_sah_pschema_modules')->run;
 
 # ABSTRACT:
 # PODNAME:
