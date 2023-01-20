@@ -80,4 +80,4 @@ Perinci::CmdLine::Any->new(url => '/main/app')->run;
 
 =head1 SEE ALSO
 
-<show-sah-filter-module>
+<show-sah-filter-rule-module>

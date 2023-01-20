@@ -1,0 +1,92 @@
+#!perl
+
+use 5.010001;
+use strict 'subs', 'vars';
+use warnings;
+use Perinci::CmdLine::Any;
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
+
+our %SPEC;
+
+$SPEC{app} = {
+    v => 1.1,
+    summary => 'Show Data::Sah::Value::{,perl,js} module',
+    args => {
+        name => {
+            schema => ['perl::modname*'],
+            pos => 0,
+            completion => sub {
+                my %args = @_;
+                require Complete::Module;
+                require Complete::Util;
+                Complete::Util::combine_answers(
+                    Complete::Module::complete_module(
+                        word => $args{word},
+                        ns_prefix => 'Data::Sah::Value',
+                    ),
+                    Complete::Module::complete_module(
+                        word => $args{word},
+                        ns_prefix => 'Data::Sah::Value::perl',
+                    ),
+                    Complete::Module::complete_module(
+                        word => $args{word},
+                        ns_prefix => 'Data::Sah::Value::js',
+                    ),
+                );
+            },
+        },
+        list => {
+            schema => ['bool', is=>1],
+            cmdline_aliases => {l=>{}},
+        },
+    },
+};
+sub app {
+    my %args = @_;
+
+    my $name = $args{name};
+
+    if ($args{list}) {
+        my @res;
+        require Module::List::Tiny;
+        my $res = Module::List::Tiny::list_modules(
+            'Data::Sah::Value::', {list_modules=>1, recurse=>1});
+        for (sort keys %$res) {
+            s/\AData::Sah::Value:://;
+            push @res, $_;
+        }
+        return [200, "OK", \@res];
+    } elsif ($name) {
+        require File::Slurper;
+        require Module::Path::More;
+        $name =~ /\A\w+(::\w+)*\z/
+            or return [400, "Invalid module name '$name'"];;
+        my $found;
+        for my $prefix ("Data::Sah::Value", "Data::Sah::Value::perl", "Data::Sah::Value::js", "") {
+            my $fullname = "$prefix\::$name";
+            my $path = Module::Path::More::module_path(module => $fullname);
+            next unless $path;
+            $found++;
+            return [200, "OK", File::Slurper::read_text($path)];
+        }
+        return [404, "No such value rule module name '$name'"] unless $found;
+    } else {
+        return [400, "Please specify name of a Sah value rule module (or -l)"];
+    }
+}
+
+Perinci::CmdLine::Any->new(
+    url => '/main/app',
+    pass_cmdline_object => 1,
+)->run;
+
+# ABSTRACT:
+# PODNAME:
+
+=head1 SEE ALSO
+
+L<list-sah-value-rule-modules>

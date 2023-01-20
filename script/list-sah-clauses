@@ -86,10 +86,10 @@ die "Can't generate function: $res->[0] - $res->[1]" unless $res->[0] == 200;
 $SPEC{list_sah_clauses}{args}{type} = {
     schema => ['str*', match => qr/\A\w+(::\w+)*\z/], # XXX sah::type_name
     req => 1,
-    pos => 0,
+    #pos => 0,
     'x.schema.entity' => 'sah::type_name',
 };
-$SPEC{list_sah_clauses}{args}{query}{pos} = 1;
+#$SPEC{list_sah_clauses}{args}{query}{pos} = 1;
 
 Perinci::CmdLine::Any->new(
     url => '/main/list_sah_clauses',

@@ -15,14 +15,14 @@ use Module::List::Tiny;
 
 my $res = gen_read_table_func(
     name => 'app',
-    summary => 'List Sah coerce rule modules',
+    summary => 'List Sah filter rule modules',
     table_data => sub {
         my $mods = Module::List::Tiny::list_modules(
-            'Data::Sah::Coerce::', {list_modules=>1, recurse=>1});
+            'Data::Sah::Value::', {list_modules=>1, recurse=>1});
 
         my @rows;
         for my $mod (sort keys %$mods) {
-            $mod =~ /\AData::Sah::Coerce::(?=[a-z])(.+)/ or next;
+            $mod =~ /\AData::Sah::Value::(?=[a-z])(.+)/ or next;
             my $row = {rule=>$1};
             (my $mod_pm = "$mod.pm") =~ s!::!/!g;
             require $mod_pm;
@@ -30,8 +30,7 @@ my $res = gen_read_table_func(
             $row->{summary} = $meta->{summary};
             $row->{dist} = ${"$mod\::DIST"};
             $row->{v} = $meta->{v};
-            $row->{prio} = $meta->{prio};
-            $row->{might_fail} = $meta->{might_fail};
+            #$row->{might_fail} = $meta->{might_fail};
             push @rows, $row;
         }
         return {data=>\@rows};
@@ -63,11 +62,11 @@ my $res = gen_read_table_func(
                 pos => 4,
                 sortable => 1,
             },
-            might_fail => {
-                schema => 'bool*',
-                pos => 5,
-                sortable => 1,
-            },
+            #might_fail => {
+            #    schema => 'bool*',
+            #    pos => 5,
+            #    sortable => 1,
+            #},
         },
         pk => 'rule',
     },
@@ -81,4 +80,4 @@ Perinci::CmdLine::Any->new(url => '/main/app')->run;
 
 =head1 SEE ALSO
 
-<show-sah-coerce-rule-module>
+<show-sah-value-rule-module>

@@ -1,0 +1,136 @@
+#!perl
+
+use 5.010;
+use strict;
+use warnings;
+
+use Perinci::CmdLine::Any;
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
+
+our %SPEC;
+
+$SPEC{get_value_with_sah} = {
+    v => 1.1,
+    summary => 'Get (default) value with a Sah value rule module',
+    args_rels => {
+    },
+    args => {
+        value_rule_names => {
+            'x.name.is_plural' => 1,
+            'x.name.singular' => 'value_rule_name',
+            schema => ['array*', of=>['any', of=>['str*', 'array*']]],
+            req => 1,
+            tags => ['category:value-rule-specification'],
+            element_completion => sub {
+                my %args = @_;
+                my $cmdline = $args{cmdline} or return;
+                my $r = $args{r};
+
+                $r->{read_config} = 1;
+                my $res = $cmdline->parse_argv($r);
+                my $type = $res->[2]{type} or return;
+                my $compiler = $res->[2]{compiler} // 'perl';
+
+                require Complete::Module;
+                Complete::Module::complete_module(
+                    word => $args{word},
+                    ns_prefix => "Data::Sah::Value::$compiler::$type",
+                );
+            },
+        },
+
+        show_code => {
+            summary => "Don't generate valaue, show generated value code only",
+            schema=>['bool', is=>1],
+            cmdline_aliases => {c=>{}},
+            tags => ['category:action-selection'],
+        },
+        compiler => {
+            summary => "Select compiler",
+            schema=>['str*', in=>[qw/perl js/]],
+            default => 'perl',
+            cmdline_aliases => {C=>{}},
+            tags => ['category:filter-specification'],
+        },
+        linenum => {
+            summary => 'When showing source code, add line numbers',
+            schema=>['bool', is=>1],
+            cmdline_aliases => {l=>{}},
+            tags => ['category:output'],
+        },
+    },
+    examples => [
+        {
+            src_plang => "bash",
+            src => q![[prog]] --value-rule-names-json '[["Str::repeat",{"str":"foo","n":5}]]'!,
+            test => 0,
+        },
+    ],
+};
+sub get_value_with_sah {
+    my %args = @_;
+
+    my $c = $args{compiler};
+
+    my $res;
+  GET_RESULT:
+    {
+        my $gen_res;
+        {
+            no strict 'refs'; ## no critic: TestingAndDebugging::ProhibitNoStrict
+            my %gen_args = (
+                default_value_rules => $args{value_rule_names},
+            );
+            $gen_args{source} = 1 if $args{show_code};
+            if ($c eq 'perl') {
+                require Data::Sah::DefaultValue;
+                $gen_res = Data::Sah::DefaultValue::gen_default_value_code(%gen_args);
+            } elsif ($c eq 'js') {
+                require Data::Sah::DefaultValueJS;
+                $gen_res = Data::Sah::DefaultValueJS::gen_default_value_code(%gen_args);
+            } else {
+                $res = [400, "Unknown compiler '$c', please specify perl/js"];
+                last GET_RESULT;
+            }
+        }
+
+        if ($args{show_code}) {
+            $gen_res .= "\n" unless $gen_res =~ /\R\z/;
+            if ($args{linenum}) {
+                require String::LineNumber;
+                $gen_res = String::LineNumber::linenum($gen_res);
+            }
+            $res = [200, "OK", $gen_res, {'cmdline.skip_format'=>1}];
+            last GET_RESULT;
+        }
+
+        $res = [200, "OK", $gen_res->()];
+        last GET_RESULT;
+
+        die "BUG: This should not be reached";
+    } # GET_RESULT
+
+    my $outputs_text = $args{-cmdline_r} &&
+        ($args{-cmdline_r}{format} // 'text') =~ /text/;
+    if ($outputs_text && $res->[0] == 200 && ref($res->[2])) {
+        require Data::Dump;
+        $res->[2] = Data::Dump::dump($res->[2]);
+   }
+    $res;
+}
+
+my $cli = Perinci::CmdLine::Any->new(
+    url => '/main/get_value_with_sah',
+    pass_cmdline_object => 1,
+);
+$cli->{common_opts}{naked_res}{default} = 1;
+$cli->run;
+
+# ABSTRACT:
+# PODNAME:
+
+=cut
