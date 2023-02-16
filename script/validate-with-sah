@@ -262,7 +262,7 @@ _
         {
             src => q([[prog]] '["int","min",1,"max",10]' --multiple-data-json '[-4,7,15]' -d),
             src_plang => 'bash',
-            summary => 'Show data alongside with result, in a table',
+            summary => 'Show data alongside with result',
         },
         {
             src => q([[prog]] '["int","min",1,"max",10]' -c -l),
