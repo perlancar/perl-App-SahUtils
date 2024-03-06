@@ -16,7 +16,7 @@ our %SPEC;
 
 my $res = gen_read_table_func(
     name => 'app',
-    summary => 'List Sah::Schemas::* modules',
+    summary => 'List Sah::PSchemaBundle::* modules',
     table_spec => {
         fields => {
             name => {
@@ -30,10 +30,10 @@ my $res = gen_read_table_func(
     table_data => sub {
         require Module::List::Tiny;
         my $mods = Module::List::Tiny::list_modules(
-            'Sah::Schemas::', {list_modules=>1, recurse=>1});
+            'Sah::PSchemaBundle::', {list_modules=>1, recurse=>1});
         my @rows;
         for my $mod (sort keys %$mods) {
-            (my $name = $mod) =~ s/\ASah::Schemas:://;
+            (my $name = $mod) =~ s/\ASah::PSchemaBundle:://;
             push @rows, {
                 name => $name,
             };
@@ -52,4 +52,4 @@ Perinci::CmdLine::Any->new(
 
 =head1 SEE ALSO
 
-L<list-sah-schema-modules>
+L<list-sah-pschema-modules>
